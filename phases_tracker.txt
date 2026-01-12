@@ -1,15 +1,109 @@
-Phase 1 — Build Phase (Now)
-Focus on code
-No publishing
-No version promises
+# TraceNest Development Phases
 
-Phase 2 — Stabilization
-APIs settle
-Directory structure frozen
-Log schema defined
+This document outlines the development phases for TraceNest, from the core runtime to the final user-facing features.
 
-Phase 3 — Release Prep
-Finalize pyproject.toml
-Write README for PyPI
-Tag version
-Publish
+---
+
+## Phase 1: Core Runtime (Mandatory)
+
+This phase focuses on building the fundamental components of the logging system. All features in this phase are critical and must be completed before other phases begin.
+
+### 1. Core Configuration (`feature/core-config`)
+- **Objective:** Establish non-configurable, immutable default settings for the logging system. This is the foundational module that all other components will depend on.
+- **Scope:** `tracenest/core/config.py`
+- **Requirements:**
+    - Default log directory (e.g., `TraceNestLogs/`).
+    - Maximum log file size in MB.
+    - Default log retention period in days.
+    - Internal buffer size for writes.
+    - Standard logging levels (e.g., INFO, ERROR, DEBUG).
+- **Constraints:**
+    - All values must be hardcoded constants.
+    - No integration with environment variables or external user configurations.
+
+### 2. Log Formatter (`feature/log-formatter`)
+- **Objective:** Define and enforce a strict, consistent JSON-based schema for all log entries. This schema is a permanent contract.
+- **Scope:** `tracenest/core/formatter.py`
+- **Requirements:**
+    - **Timestamp:** ISO 8601 format.
+    - **Log Level:** e.g., "INFO", "ERROR".
+    - **Message:** The primary log string.
+    - **Metadata:** A flexible dictionary for structured data.
+    - **Source (Optional):** Originating file and line number.
+- **Constraints:**
+    - Output must be a single JSON object per line (JSON Lines).
+
+### 3. File Writer (`feature/file-writer`)
+- **Objective:** Create a robust and safe mechanism for writing log entries to disk.
+- **Scope:** `tracenest/core/writer.py`
+- **Requirements:**
+    - Buffered writes for performance.
+    - Thread-safe operations.
+    - Handles file creation and permissions.
+- **Constraints:**
+    - Must fail silently and never propagate exceptions to the application.
+
+### 4. Log Rotation (`feature/log-rotation`)
+- **Objective:** Implement strategies to manage log file size and prevent unbounded growth.
+- **Scope:** `tracenest/core/rotation.py`
+- **Requirements:**
+    - Rotation based on file size.
+    - Daily rotation (date-based).
+    - Mechanism for archiving old log files.
+
+### 5. Log Retention (`feature/log-retention`)
+- **Objective:** Automatically manage disk space by deleting old logs.
+- **Scope:** `tracenest/core/retention.py`
+- **Requirements:**
+    - Enforce the configured retention period (in days).
+    - Perform safe deletion of log files.
+    - Execute cleanup tasks on application startup.
+
+---
+
+## Phase 2: Public API (Critical)
+
+This phase exposes the core logging functionality to end-users.
+
+### 6. Public Logger (`feature/public-logger`)
+- **Objective:** Provide a simple, intuitive, and user-facing API for creating logs.
+- **Scope:** `tracenest/logger.py`, `tracenest/__init__.py`
+- **Requirements:**
+    - Expose `logger.info()`, `logger.error()`, `logger.debug()`, etc.
+    - Allow passing structured data as metadata.
+- **Constraints:**
+    - The public API must be considered stable and backward-compatible from its first release.
+
+---
+
+## Phase 3: Framework Integration
+
+This phase provides seamless integration with popular web frameworks.
+
+### 7. FastAPI Middleware (`feature/fastapi-middleware`)
+- **Objective:** Provide automatic, out-of-the-box request logging for FastAPI applications.
+- **Scope:** `tracenest/fastapi/middleware.py`
+- **Requirements:**
+    - Log HTTP method, path, and status code.
+    - Record request processing duration.
+    - Automatically capture and log unhandled exceptions.
+
+---
+
+## Phase 4: UI (Optional for v0.1.0)
+
+This phase introduces a user interface for log exploration.
+
+### 8. UI Router (`feature/ui-router`)
+- **Objective:** Create a web-based, read-only interface for viewing and searching logs.
+- **Scope:** `tracenest/ui/router.py`, `tracenest/ui/templates/`, `tracenest/ui/static/`
+
+---
+
+## Phase 5: Documentation & Examples
+
+This phase focuses on creating comprehensive documentation and practical examples.
+
+### 9. Documentation and Examples (`feature/docs-basics`)
+- **Objective:** Create essential documentation and practical examples for users.
+- **Scope:** `docs/`, `examples/`
