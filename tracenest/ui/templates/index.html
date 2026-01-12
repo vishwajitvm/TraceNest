@@ -1,0 +1,271 @@
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+
+<div id="app-container" class="theme-light">
+  <div class="d-flex vh-100 overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="sidebar border-end d-flex flex-column">
+      <div class="p-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="logo-text h5 mb-0 fw-bold">Log Viewer</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        </div>
+        <a href="#" class="text-muted text-decoration-none small">← Back to Laravel</a>
+      </div>
+
+      <div class="flex-grow-1 overflow-auto px-3">
+        <div class="file-item active d-flex align-items-center p-2 rounded mb-1">
+          <span class="flex-grow-1 small">laravel.log</span>
+          <span class="file-size me-2">4.58 MB</span>
+          <span class="opacity-50">⋮</span>
+        </div>
+        <div class="file-item d-flex align-items-center p-2 rounded mb-1">
+          <span class="flex-grow-1 small">laravel-2022-08-23.log</span>
+          <span class="file-size me-2">11.25 KB</span>
+          <span class="opacity-50">⋮</span>
+        </div>
+        <div class="file-item d-flex align-items-center p-2 rounded mb-1">
+          <span class="flex-grow-1 small">laravel-2022-07-28.log</span>
+          <span class="file-size me-2">104.80 MB</span>
+          <span class="opacity-50">⋮</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1 d-flex flex-column overflow-hidden">
+      <header class="p-3 border-bottom d-flex align-items-center justify-content-between gap-3">
+        <div class="d-flex gap-2 flex-wrap">
+          <div class="badge-filter bg-debug">Debug: 2,595</div>
+          <div class="badge-filter bg-info">Info: 2,491</div>
+          <div class="badge-filter bg-warning">Warning: 2,442</div>
+          <div class="badge-filter bg-error">Error: 2,475</div>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-end" style="max-width: 600px;">
+          <input type="text" class="form-control form-control-sm search-input" placeholder="Search... RegEx welcome!">
+          <button class="btn btn-sm btn-outline-secondary">🔄</button>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              ⚙️ Theme
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
+              <li><button class="dropdown-item" onclick="setTheme('light')">Light Mode</button></li>
+              <li><button class="dropdown-item" onclick="setTheme('dark')">Dark Mode</button></li>
+              <li><button class="dropdown-item" onclick="setTheme('dark-blue')">Dark Blue Theme</button></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <div class="flex-grow-1 overflow-auto p-3">
+        <table class="table table-sm custom-table">
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>Time</th>
+              <th>Env</th>
+              <th>Description</th>
+              <th class="text-end">#</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="text-error fw-bold">● Error</span></td>
+              <td class="text-muted small">2022-08-25 11:23:07</td>
+              <td class="text-muted small">local</td>
+              <td class="log-desc">Command "composer" is not defined. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException..."</td>
+              <td class="text-muted text-end small">10,002</td>
+            </tr>
+            <tr>
+              <td><span class="text-info fw-bold">● Info</span></td>
+              <td class="text-muted small">2022-08-25 11:17:41</td>
+              <td class="text-muted small">local</td>
+              <td class="log-desc">Example log entry for the level info {"one":1,"two":"two","three":[1,2,3]}</td>
+              <td class="text-muted text-end small">9,998</td>
+            </tr>
+            <tr>
+              <td><span class="text-warning fw-bold">● Warning</span></td>
+              <td class="text-muted small">2022-08-25 11:17:41</td>
+              <td class="text-muted small">local</td>
+              <td class="log-desc">Example log entry for the level warning {"one":1,"two":"two","three":[1,2,3]}</td>
+              <td class="text-muted text-end small">9,990</td>
+            </tr>
+            <tr>
+              <td><span class="text-debug fw-bold">● Debug</span></td>
+              <td class="text-muted small">2022-08-25 11:17:41</td>
+              <td class="text-muted small">local</td>
+              <td class="log-desc">Example log entry for the level debug {"one":1,"two":"two","three":[1,2,3]}</td>
+              <td class="text-muted text-end small">9,994</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="p-2 border-top d-flex justify-content-between align-items-center small text-muted px-3">
+        <div>
+            <span class="me-2">1</span> <span class="me-2">2</span> <span class="me-2">3</span> ... <span class="me-2">401</span> →
+        </div>
+        <div>Memory: 6.00 MB · Duration: 9ms · Version: v1.1.0</div>
+      </footer>
+    </main>
+  </div>
+</div>
+
+<style>
+:root {
+  --debug-color: #3b82f6;
+  --info-color: #0ea5e9;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Theme: Light */
+.theme-light {
+  --bg-main: #f8fafc;
+  --bg-sidebar: #ffffff;
+  --text-main: #1e293b;
+  --border-color: #e2e8f0;
+  --item-hover: #f1f5f9;
+  --item-active: #ecfdf5;
+  --item-active-text: #059669;
+}
+
+/* Theme: Dark */
+.theme-dark {
+  --bg-main: #111827;
+  --bg-sidebar: #1f2937;
+  --text-main: #f3f4f6;
+  --border-color: #374151;
+  --item-hover: #374151;
+  --item-active: #064e3b;
+  --item-active-text: #34d399;
+}
+
+/* Theme: Dark Blue */
+.theme-dark-blue {
+  --bg-main: #0f172a;
+  --bg-sidebar: #1e293b;
+  --text-main: #e2e8f0;
+  --border-color: #334155;
+  --item-hover: #334155;
+  --item-active: #1e40af;
+  --item-active-text: #bfdbfe;
+}
+
+#app-container {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition: all 0.3s ease;
+}
+
+.sidebar {
+  width: 280px;
+  background-color: var(--bg-sidebar);
+  border-color: var(--border-color) !important;
+}
+
+header, footer {
+  border-color: var(--border-color) !important;
+}
+
+.logo-text { color: #059669; }
+.theme-dark .logo-text, .theme-dark-blue .logo-text { color: #10b981; }
+
+.file-item { cursor: pointer; transition: background 0.2s; color: var(--text-main); }
+.file-item:hover { background-color: var(--item-hover); }
+.file-item.active { 
+  background-color: var(--item-active) !important; 
+  color: var(--item-active-text) !important; 
+}
+
+.file-size { font-size: 10px; opacity: 0.6; }
+
+.badge-filter {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+}
+
+.bg-debug { background-color: var(--debug-color); }
+.bg-info { background-color: var(--info-color); }
+.bg-warning { background-color: var(--warning-color); }
+.bg-error { background-color: var(--error-color); }
+
+.text-debug { color: var(--debug-color); }
+.text-info { color: var(--info-color); }
+.text-warning { color: var(--warning-color); }
+.text-error { color: var(--error-color); }
+
+.search-input {
+  background-color: var(--bg-sidebar);
+  border-color: var(--border-color);
+  color: var(--text-main);
+}
+.search-input:focus {
+  background-color: var(--bg-sidebar);
+  color: var(--text-main);
+  border-color: var(--info-color);
+  box-shadow: none;
+}
+
+.custom-table {
+  color: inherit !important;
+}
+.custom-table thead th {
+  border-bottom: 1px solid var(--border-color);
+  color: #94a3b8;
+  font-weight: 500;
+}
+.custom-table td {
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 8px !important;
+}
+
+.log-desc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.dropdown-menu {
+  background-color: var(--bg-sidebar);
+  border-color: var(--border-color);
+}
+.dropdown-item { color: var(--text-main); }
+.dropdown-item:hover { background-color: var(--item-hover); color: var(--text-main); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #94a3b844; border-radius: 10px; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function setTheme(themeName) {
+  const container = document.getElementById('app-container');
+  container.className = ''; // Clear existing classes
+  container.classList.add('theme-' + themeName);
+  
+  // Optional: Save to localStorage
+  localStorage.setItem('preferred-theme', themeName);
+}
+
+// Load saved theme
+const savedTheme = localStorage.getItem('preferred-theme');
+if (savedTheme) {
+  setTheme(savedTheme);
+}
+</script>
