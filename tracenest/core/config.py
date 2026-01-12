@@ -202,3 +202,10 @@ ENABLE_INTERNAL_HEALTH_CHECKS: Final[bool] = True
 
 # Log internal TraceNest errors
 LOG_INTERNAL_ERRORS: Final[bool] = False
+
+# Maximum total log record size (bytes)
+MAX_LOG_RECORD_SIZE_BYTES = 50 * 1024  # 50 KB
+
+# Maximum exception stack trace length
+MAX_EXCEPTION_STACK_LENGTH = 20 * 1024  # 20 KB
+
