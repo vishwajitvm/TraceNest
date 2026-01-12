@@ -1,0 +1,15 @@
+Phase 1 — Build Phase (Now)
+Focus on code
+No publishing
+No version promises
+
+Phase 2 — Stabilization
+APIs settle
+Directory structure frozen
+Log schema defined
+
+Phase 3 — Release Prep
+Finalize pyproject.toml
+Write README for PyPI
+Tag version
+Publish
