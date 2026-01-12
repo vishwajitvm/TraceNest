@@ -4,10 +4,10 @@ TraceNest Log Formatter
 Defines the immutable log record schema and serialization logic.
 Output format: JSON Lines (one JSON object per line).
 
-This module is SAFETY-CRITICAL:
-- Must NEVER raise exceptions outward
-- Must NEVER emit invalid JSON
-- Must ALWAYS bound size and complexity
+SAFETY GUARANTEES:
+- Never raises exceptions outward
+- Never emits invalid JSON
+- Never exceeds size limits
 """
 
 from __future__ import annotations
@@ -148,8 +148,24 @@ def _get_runtime_context() -> Dict[str, Any]:
         return {}
 
 
+def _get_env() -> str:
+    """
+    Explicit environment signal.
+    Zero config. Best effort.
+    """
+    try:
+        return (
+            os.getenv("TRACENEST_ENV")
+            or os.getenv("ENV")
+            or os.getenv("APP_ENV")
+            or "local"
+        )
+    except Exception:
+        return "local"
+
+
 # =====================================================================
-# Exception handling (CRITICAL)
+# Exception handling
 # =====================================================================
 
 
@@ -178,7 +194,7 @@ def _format_exception(exc: BaseException) -> Dict[str, Any]:
 
 
 # =====================================================================
-# Public formatter
+# Public formatter (FINAL BOUNDARY)
 # =====================================================================
 
 
@@ -198,16 +214,24 @@ def format_log(
     It must never raise.
     """
     try:
+        ts = _utc_now_iso()
+        msg = _truncate(str(message), MAX_MESSAGE_LENGTH)
+
         record: Dict[str, Any] = {
             # ---- schema identity ----
             "schema": "tracenest.v1",
             "project": PROJECT_NAME,
             "version": PROJECT_VERSION,
 
-            # ---- core fields ----
-            "ts": _utc_now_iso(),
+            # ---- canonical fields ----
+            "ts": ts,                 # internal
+            "timestamp": ts,          # external-friendly
             "level": str(level).upper(),
-            "msg": _truncate(str(message), MAX_MESSAGE_LENGTH),
+
+            "msg": msg,               # internal
+            "message": msg,           # external-friendly
+
+            "env": _get_env(),
 
             # ---- structured metadata ----
             "meta": _sanitize_metadata(metadata),

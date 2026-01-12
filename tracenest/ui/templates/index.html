@@ -23,23 +23,10 @@
         <div class="d-flex align-items-center gap-2 mb-2">
           <span class="logo-text h5 mb-0 fw-bold">TraceNest</span>
         </div>
-        <a href="#" class="text-muted text-decoration-none small">← Back to Laravel</a>
+        <a href="/" class="text-muted text-decoration-none small">← Back</a>
       </div>
 
-      <div class="flex-grow-1 overflow-auto px-3">
-        <div class="file-item active">
-          <span>laravel.log</span>
-          <span class="file-size">4.58 MB</span>
-        </div>
-        <div class="file-item">
-          <span>laravel-2022-08-23.log</span>
-          <span class="file-size">11.25 KB</span>
-        </div>
-        <div class="file-item">
-          <span>laravel-2022-07-28.log</span>
-          <span class="file-size">104.80 MB</span>
-        </div>
-      </div>
+      <div class="flex-grow-1 overflow-auto px-3" id="file-list"></div>
     </aside>
 
     <!-- MAIN -->
@@ -48,27 +35,28 @@
       <!-- HEADER -->
       <header class="p-3 border-bottom d-flex justify-content-between align-items-center gap-3">
         <div class="d-flex gap-2 flex-wrap">
-          <div class="badge-filter bg-debug" data-level="debug">Debug</div>
-<div class="badge-filter bg-info" data-level="info">Info</div>
-<div class="badge-filter bg-warning" data-level="warning">Warning</div>
-<div class="badge-filter bg-error" data-level="error">Error</div>
 
+          <!-- ✅ NEW: ALL -->
+          <div class="badge-filter bg-info active-all" data-level="all">All</div>
+
+          <div class="badge-filter bg-debug" data-level="debug">Debug</div>
+          <div class="badge-filter bg-info" data-level="info">Info</div>
+          <div class="badge-filter bg-warning" data-level="warning">Warning</div>
+          <div class="badge-filter bg-error" data-level="error">Error</div>
         </div>
 
         <div class="d-flex align-items-center gap-2">
           <input
             class="form-control form-control-sm search-input"
-            placeholder="Search... RegEx welcome!"
+            placeholder="Search…"
             style="width:280px"
           />
 
-          <!-- SETTINGS -->
           <div class="dropdown">
             <button
               class="btn btn-sm btn-outline-secondary dropdown-toggle settings-btn"
               type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false">
+              data-bs-toggle="dropdown">
               ⚙️
             </button>
 
@@ -93,119 +81,15 @@
               <th class="text-end">#</th>
             </tr>
           </thead>
-
-          <tbody>
-
-            <!-- RECORD 1 -->
-            <tr class="log-row" data-expand>
-              <td><span class="text-error fw-bold">● Error</span></td>
-              <td class="text-muted small">2022-08-25 11:23:07</td>
-              <td class="text-muted small">local</td>
-              <td class="log-desc truncate">Command "composer" is not defined.</td>
-              <td class="text-muted text-end small">10,002</td>
-            </tr>
-            <tr class="log-expand">
-              <td colspan="5">
-                <pre class="expanded-content">
-{
-  "exception": "CommandNotFoundException",
-  "command": "composer",
-  "trace_id": "err-001"
-}
-                </pre>
-              </td>
-            </tr>
-
-            <!-- RECORD 2 -->
-            <tr class="log-row" data-expand>
-              <td><span class="text-warning fw-bold">● Warning</span></td>
-              <td class="text-muted small">2022-08-25 11:21:11</td>
-              <td class="text-muted small">local</td>
-              <td class="log-desc truncate">Deprecated config key detected.</td>
-              <td class="text-muted text-end small">9,990</td>
-            </tr>
-            <tr class="log-expand">
-              <td colspan="5">
-                <pre class="expanded-content">
-{
-  "key": "legacy_timeout",
-  "suggestion": "Use request_timeout",
-  "trace_id": "warn-002"
-}
-                </pre>
-              </td>
-            </tr>
-
-            <!-- RECORD 3 -->
-            <tr class="log-row" data-expand>
-              <td><span class="text-info fw-bold">● Info</span></td>
-              <td class="text-muted small">2022-08-25 11:18:41</td>
-              <td class="text-muted small">local</td>
-              <td class="log-desc truncate">User login successful.</td>
-              <td class="text-muted text-end small">9,998</td>
-            </tr>
-            <tr class="log-expand">
-              <td colspan="5">
-                <pre class="expanded-content">
-{
-  "user_id": 42,
-  "ip": "192.168.1.10",
-  "trace_id": "info-003"
-}
-                </pre>
-              </td>
-            </tr>
-
-            <!-- RECORD 4 -->
-            <tr class="log-row" data-expand>
-              <td><span class="text-debug fw-bold">● Debug</span></td>
-              <td class="text-muted small">2022-08-25 11:17:01</td>
-              <td class="text-muted small">local</td>
-              <td class="log-desc truncate">Cache key resolved.</td>
-              <td class="text-muted text-end small">9,994</td>
-            </tr>
-            <tr class="log-expand">
-              <td colspan="5">
-                <pre class="expanded-content">
-{
-  "cache_key": "user_profile_42",
-  "ttl": 3600,
-  "trace_id": "dbg-004"
-}
-                </pre>
-              </td>
-            </tr>
-
-            <!-- RECORD 5 -->
-            <tr class="log-row" data-expand>
-              <td><span class="text-error fw-bold">● Error</span></td>
-              <td class="text-muted small">2022-08-25 11:15:55</td>
-              <td class="text-muted small">local</td>
-              <td class="log-desc truncate">Database connection failed.</td>
-              <td class="text-muted text-end small">9,981</td>
-            </tr>
-            <tr class="log-expand">
-              <td colspan="5">
-                <pre class="expanded-content">
-{
-  "database": "postgres",
-  "host": "db.internal",
-  "retry": false,
-  "trace_id": "err-005"
-}
-                </pre>
-              </td>
-            </tr>
-<div id="pagination"></div>
-
-          </tbody>
+          <tbody id="log-body"></tbody>
         </table>
+
+        <div id="pagination" class="mt-2"></div>
       </div>
 
-      <!-- FOOTER -->
       <footer class="p-2 border-top d-flex justify-content-between small text-muted px-3">
-        <div>1 2 3 … 401 →</div>
-        <div>Memory: 6.00 MB · Duration: 9ms · Version: v1.1.0</div>
+        <div>TraceNest Logs</div>
+        <div>Local · Non-Blocking · Safe</div>
       </footer>
 
     </main>

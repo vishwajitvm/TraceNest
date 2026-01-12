@@ -1,274 +1,274 @@
 /* =========================================================
-   TRACE NEST UI — FULL CLIENT LOGIC
+   TRACE NEST UI — INFRASTRUCTURE-GRADE CLIENT
    ========================================================= */
 
-/* -------------------------------
-   MOCK DATA (PER FILE)
--------------------------------- */
-const FILE_LOGS = {
-  "laravel.log": [
-    {
-      level: "error",
-      time: "2022-08-25 11:23:07",
-      env: "local",
-      message: 'Command "composer" is not defined.',
-      details: {
-        exception: "CommandNotFoundException",
-        file: "/app/Console/Kernel.php:42",
-        trace_id: "err-001"
-      }
-    },
-    {
-      level: "warning",
-      time: "2022-08-25 11:21:11",
-      env: "local",
-      message: "Deprecated config key detected.",
-      details: {
-        key: "legacy_timeout",
-        suggestion: "Use request_timeout",
-        trace_id: "warn-002"
-      }
-    },
-    {
-      level: "info",
-      time: "2022-08-25 11:18:41",
-      env: "local",
-      message: "User login successful.",
-      details: {
-        user_id: 42,
-        ip: "192.168.1.10",
-        trace_id: "info-003"
-      }
-    },
-    {
-      level: "debug",
-      time: "2022-08-25 11:17:01",
-      env: "local",
-      message: "Cache key resolved.",
-      details: {
-        cache_key: "user_profile_42",
-        ttl: 3600,
-        trace_id: "dbg-004"
-      }
-    },
-    {
-      level: "error",
-      time: "2022-08-25 11:15:55",
-      env: "local",
-      message: "Database connection failed.",
-      details: {
-        database: "postgres",
-        host: "db.internal",
-        retry: false,
-        trace_id: "err-005"
-      }
-    },
-    {
-      level: "info",
-      time: "2022-08-25 11:14:21",
-      env: "local",
-      message: "Background job completed.",
-      details: {
-        job: "email_dispatch",
-        duration_ms: 842,
-        trace_id: "info-006"
-      }
-    }
-  ],
-
-  "laravel-2022-08-23.log": [],
-  "laravel-2022-07-28.log": []
-};
+const API_BASE = "/tracenest/api";
 
 /* -------------------------------
    STATE
 -------------------------------- */
-let currentFile = "laravel.log";
-let activeLevels = new Set();
+let currentFile = null;
+let logLines = [];
+let activeLevels = new Set(); // empty = ALL
 let searchTerm = "";
 let currentPage = 1;
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 50;
 
 /* -------------------------------
-   DOM REFERENCES
+   DOM
 -------------------------------- */
-const tbody = document.querySelector("tbody");
+const tbody = document.getElementById("log-body");
 const paginationEl = document.getElementById("pagination");
 const searchInput = document.querySelector(".search-input");
+const fileList = document.getElementById("file-list");
 const container = document.getElementById("app-container");
+const badges = document.querySelectorAll(".badge-filter");
 
 /* -------------------------------
-   HELPERS
+   PARSING CORE (DO NOT BREAK)
 -------------------------------- */
-function levelLabel(level) {
-  return level.charAt(0).toUpperCase() + level.slice(1);
+function tryParseJSON(line) {
+  try {
+    const jsonStart = line.indexOf("{");
+    if (jsonStart === -1) return null;
+    return JSON.parse(line.slice(jsonStart));
+  } catch {
+    return null;
+  }
 }
 
-function matchesSearch(log) {
-  if (!searchTerm) return true;
-  const haystack = (
-    log.message +
-    " " +
-    JSON.stringify(log.details)
-  ).toLowerCase();
-  return haystack.includes(searchTerm);
+function extractTimestamp(line, obj) {
+  return (
+    obj?.timestamp ||
+    obj?.time ||
+    (line.match(/\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}/) || [])[0] ||
+    "—"
+  );
+}
+
+function extractEnv(line, obj) {
+  return (
+    obj?.env ||
+    obj?.environment ||
+    (line.match(/\[(local|dev|prod|production|staging)\]/i) || [])[1] ||
+    "local"
+  );
+}
+
+function extractLevel(line, obj) {
+  const lvl = obj?.level || "";
+  const l = (lvl || line).toLowerCase();
+
+  if (l.includes("error")) return "error";
+  if (l.includes("warn")) return "warning";
+  if (l.includes("debug")) return "debug";
+  return "info";
+}
+
+function extractMessage(line, obj) {
+  return obj?.message || obj?.msg || line;
 }
 
 /* -------------------------------
-   FILTERED LOGS
+   FILTERING
 -------------------------------- */
-function getFilteredLogs() {
-  const logs = FILE_LOGS[currentFile] || [];
+function matchesSearch(line) {
+  return !searchTerm || line.toLowerCase().includes(searchTerm);
+}
 
-  return logs.filter(log => {
-    if (activeLevels.size && !activeLevels.has(log.level)) return false;
-    if (!matchesSearch(log)) return false;
+/* -------------------------------
+   API
+-------------------------------- */
+async function fetchFiles() {
+  const r = await fetch(`${API_BASE}/logs`);
+  return (await r.json()).logs || [];
+}
+
+async function fetchLines(file) {
+  const r = await fetch(`${API_BASE}/logs/${file}?limit=4000`);
+  return (await r.json()).lines || [];
+}
+
+/* -------------------------------
+   SIDEBAR
+-------------------------------- */
+async function renderSidebar() {
+  fileList.innerHTML = "";
+  const files = await fetchFiles();
+  if (!files.length) return;
+
+  files.forEach((file, idx) => {
+    const div = document.createElement("div");
+    div.className = "file-item";
+    if (idx === 0) div.classList.add("active");
+    div.innerHTML = `<span>${file}</span>`;
+    div.onclick = () => selectFile(file, div);
+    fileList.appendChild(div);
+  });
+
+  selectFile(files[0], fileList.firstChild);
+}
+
+async function selectFile(file, el) {
+  document.querySelectorAll(".file-item").forEach(f =>
+    f.classList.remove("active")
+  );
+  el.classList.add("active");
+
+  currentFile = file;
+  logLines = await fetchLines(file);
+
+  resetState();
+  renderTable();
+}
+
+/* -------------------------------
+   FILTERED DATA
+-------------------------------- */
+function filteredLines() {
+  return logLines.filter(line => {
+    const obj = tryParseJSON(line);
+    const level = extractLevel(line, obj);
+
+    if (activeLevels.size && !activeLevels.has(level)) return false;
+    if (!matchesSearch(line)) return false;
+
     return true;
   });
 }
 
 /* -------------------------------
-   RENDER TABLE
+   TABLE RENDER
 -------------------------------- */
 function renderTable() {
   tbody.innerHTML = "";
 
-  const filtered = getFilteredLogs();
+  const data = filteredLines();
   const start = (currentPage - 1) * PAGE_SIZE;
-  const pageLogs = filtered.slice(start, start + PAGE_SIZE);
+  const page = data.slice(start, start + PAGE_SIZE);
 
-  pageLogs.forEach(log => {
+  page.forEach(line => {
+    const obj = tryParseJSON(line);
+
+    const level = extractLevel(line, obj);
+    const time = extractTimestamp(line, obj);
+    const env = extractEnv(line, obj);
+    const msg = extractMessage(line, obj);
+
     const row = document.createElement("tr");
     row.className = "log-row";
     row.innerHTML = `
-      <td><span class="text-${log.level} fw-bold">● ${levelLabel(log.level)}</span></td>
-      <td class="text-muted small">${log.time}</td>
-      <td class="text-muted small">${log.env}</td>
-      <td class="log-desc truncate">${log.message}</td>
-      <td class="text-muted text-end small"></td>
+      <td><span class="text-${level} fw-bold">● ${level}</span></td>
+      <td class="text-muted small">${time}</td>
+      <td class="text-muted small">${env}</td>
+      <td class="log-desc truncate">${msg}</td>
+      <td></td>
     `;
 
-    const expandRow = document.createElement("tr");
-    expandRow.className = "log-expand";
-    expandRow.innerHTML = `
+    const expand = document.createElement("tr");
+    expand.className = "log-expand";
+    expand.innerHTML = `
       <td colspan="5">
-        <pre class="expanded-content">${JSON.stringify(log.details, null, 2)}</pre>
+        <pre class="expanded-content">${
+          obj ? JSON.stringify(obj, null, 2) : line
+        }</pre>
       </td>
     `;
 
-    row.addEventListener("click", () => {
-      // collapse others
-      document.querySelectorAll(".log-expand.active").forEach(el => {
-        if (el !== expandRow) el.classList.remove("active");
-      });
-      expandRow.classList.toggle("active");
-    });
+    row.onclick = () => {
+      document.querySelectorAll(".log-expand.active")
+        .forEach(e => e !== expand && e.classList.remove("active"));
+      expand.classList.toggle("active");
+    };
 
     tbody.appendChild(row);
-    tbody.appendChild(expandRow);
+    tbody.appendChild(expand);
   });
 
-  renderPagination(filtered.length);
+  renderPagination(data.length);
 }
 
 /* -------------------------------
    PAGINATION
 -------------------------------- */
-function renderPagination(totalCount) {
+function renderPagination(total) {
   paginationEl.innerHTML = "";
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+  const pages = Math.ceil(total / PAGE_SIZE);
+  if (pages <= 1) return;
 
-  if (totalPages <= 1) return;
-
-  for (let i = 1; i <= totalPages; i++) {
-    const btn = document.createElement("span");
-    btn.textContent = i;
-    btn.className = i === currentPage ? "active" : "";
-    btn.addEventListener("click", () => {
+  for (let i = 1; i <= pages; i++) {
+    const s = document.createElement("span");
+    s.textContent = i;
+    s.className = i === currentPage ? "active" : "";
+    s.onclick = () => {
       currentPage = i;
       renderTable();
-    });
-    paginationEl.appendChild(btn);
+    };
+    paginationEl.appendChild(s);
   }
 }
 
 /* -------------------------------
    SEARCH
 -------------------------------- */
-searchInput.addEventListener("input", e => {
+searchInput.oninput = e => {
   searchTerm = e.target.value.toLowerCase();
   currentPage = 1;
   renderTable();
-});
+};
 
 /* -------------------------------
-   LEVEL FILTERS
+   LEVEL FILTERS (WITH ALL)
 -------------------------------- */
-document.querySelectorAll(".badge-filter").forEach(badge => {
-  badge.addEventListener("click", () => {
-    const level = badge.dataset.level;
+badges.forEach(badge => {
+  badge.onclick = () => {
+    const lvl = badge.dataset.level;
 
-    if (activeLevels.has(level)) {
-      activeLevels.delete(level);
-      badge.style.opacity = "0.4";
+    if (lvl === "all") {
+      activeLevels.clear();
+      badges.forEach(b => (b.style.opacity = "1"));
     } else {
-      activeLevels.add(level);
-      badge.style.opacity = "1";
+      activeLevels.has(lvl)
+        ? activeLevels.delete(lvl)
+        : activeLevels.add(lvl);
+
+      document.querySelector('[data-level="all"]').style.opacity = "0.4";
+      badge.style.opacity = activeLevels.has(lvl) ? "1" : "0.4";
     }
 
     currentPage = 1;
     renderTable();
-  });
+  };
 });
 
 /* -------------------------------
-   SIDEBAR FILE SWITCH
+   THEME
 -------------------------------- */
-document.querySelectorAll(".file-item").forEach(item => {
-  item.addEventListener("click", () => {
-    document.querySelectorAll(".file-item").forEach(i =>
-      i.classList.remove("active")
-    );
-    item.classList.add("active");
-
-    currentFile = item.querySelector("span").innerText.trim();
-
-    // reset state
-    activeLevels.clear();
-    searchTerm = "";
-    currentPage = 1;
-    searchInput.value = "";
-
-    document.querySelectorAll(".badge-filter").forEach(b =>
-      (b.style.opacity = "1")
-    );
-
-    renderTable();
-  });
-});
-
-/* -------------------------------
-   THEME HANDLING
--------------------------------- */
-document.querySelectorAll("[data-theme]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    setTheme(btn.dataset.theme);
-  });
-});
-
 function setTheme(theme) {
-  container.className = "";
-  container.classList.add(`theme-${theme}`);
+  container.className = `theme-${theme}`;
   localStorage.setItem("tracenest-theme", theme);
 }
 
+document.querySelectorAll("[data-theme]").forEach(btn =>
+  btn.onclick = () => setTheme(btn.dataset.theme)
+);
+
 const savedTheme = localStorage.getItem("tracenest-theme");
-if (savedTheme) {
-  setTheme(savedTheme);
+if (savedTheme) setTheme(savedTheme);
+
+/* -------------------------------
+   RESET
+-------------------------------- */
+function resetState() {
+  activeLevels.clear();
+  searchTerm = "";
+  currentPage = 1;
+  searchInput.value = "";
+  badges.forEach(b => (b.style.opacity = "1"));
 }
 
 /* -------------------------------
    INIT
 -------------------------------- */
-renderTable();
+renderSidebar();
