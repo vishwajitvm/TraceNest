@@ -1,5 +1,5 @@
 /* =========================================================
-   TRACE NEST UI — INFRASTRUCTURE-GRADE CLIENT
+   TRACE NEST UI — FORMATTER-TRUSTING CLIENT
    ========================================================= */
 
 const API_BASE = "/tracenest/api";
@@ -26,48 +26,44 @@ const container = document.getElementById("app-container");
 const badges = document.querySelectorAll(".badge-filter");
 
 /* -------------------------------
-   PARSING CORE (DO NOT BREAK)
+   PARSING (FORMATTER FIRST)
 -------------------------------- */
-function tryParseJSON(line) {
+function parseLine(line) {
+  // Structured TraceNest log
   try {
-    const jsonStart = line.indexOf("{");
-    if (jsonStart === -1) return null;
-    return JSON.parse(line.slice(jsonStart));
+    const start = line.indexOf("{");
+    if (start !== -1) {
+      const obj = JSON.parse(line.slice(start));
+      if (obj.schema === "tracenest.v1") {
+        return {
+          structured: true,
+          level: (obj.level || "INFO").toLowerCase(),
+          timestamp: obj.timestamp || obj.ts || "—",
+          env: obj.env || "local",
+          message: obj.message || obj.msg || "",
+          raw: obj,
+        };
+      }
+    }
   } catch {
-    return null;
+    // fall through
   }
-}
 
-function extractTimestamp(line, obj) {
-  return (
-    obj?.timestamp ||
-    obj?.time ||
-    (line.match(/\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}/) || [])[0] ||
-    "—"
-  );
-}
+  // Fallback: plain text
+  const lower = line.toLowerCase();
+  let level = "info";
+  if (lower.includes("error")) level = "error";
+  else if (lower.includes("warn")) level = "warning";
+  else if (lower.includes("debug")) level = "debug";
 
-function extractEnv(line, obj) {
-  return (
-    obj?.env ||
-    obj?.environment ||
-    (line.match(/\[(local|dev|prod|production|staging)\]/i) || [])[1] ||
-    "local"
-  );
-}
-
-function extractLevel(line, obj) {
-  const lvl = obj?.level || "";
-  const l = (lvl || line).toLowerCase();
-
-  if (l.includes("error")) return "error";
-  if (l.includes("warn")) return "warning";
-  if (l.includes("debug")) return "debug";
-  return "info";
-}
-
-function extractMessage(line, obj) {
-  return obj?.message || obj?.msg || line;
+  return {
+    structured: false,
+    level,
+    timestamp: "—",
+    env: "local",
+    message: line,
+    raw: line,
+  };
 }
 
 /* -------------------------------
@@ -86,7 +82,7 @@ async function fetchFiles() {
 }
 
 async function fetchLines(file) {
-  const r = await fetch(`${API_BASE}/logs/${file}?limit=4000`);
+  const r = await fetch(`${API_BASE}/logs/${file}?limit=5000`);
   return (await r.json()).lines || [];
 }
 
@@ -126,16 +122,14 @@ async function selectFile(file, el) {
 /* -------------------------------
    FILTERED DATA
 -------------------------------- */
-function filteredLines() {
-  return logLines.filter(line => {
-    const obj = tryParseJSON(line);
-    const level = extractLevel(line, obj);
-
-    if (activeLevels.size && !activeLevels.has(level)) return false;
-    if (!matchesSearch(line)) return false;
-
-    return true;
-  });
+function filteredEntries() {
+  return logLines
+    .map(parseLine)
+    .filter(entry => {
+      if (activeLevels.size && !activeLevels.has(entry.level)) return false;
+      if (!matchesSearch(entry.message)) return false;
+      return true;
+    });
 }
 
 /* -------------------------------
@@ -144,25 +138,18 @@ function filteredLines() {
 function renderTable() {
   tbody.innerHTML = "";
 
-  const data = filteredLines();
+  const data = filteredEntries();
   const start = (currentPage - 1) * PAGE_SIZE;
   const page = data.slice(start, start + PAGE_SIZE);
 
-  page.forEach(line => {
-    const obj = tryParseJSON(line);
-
-    const level = extractLevel(line, obj);
-    const time = extractTimestamp(line, obj);
-    const env = extractEnv(line, obj);
-    const msg = extractMessage(line, obj);
-
+  page.forEach(entry => {
     const row = document.createElement("tr");
     row.className = "log-row";
     row.innerHTML = `
-      <td><span class="text-${level} fw-bold">● ${level}</span></td>
-      <td class="text-muted small">${time}</td>
-      <td class="text-muted small">${env}</td>
-      <td class="log-desc truncate">${msg}</td>
+      <td><span class="text-${entry.level} fw-bold">● ${entry.level}</span></td>
+      <td class="text-muted small">${entry.timestamp}</td>
+      <td class="text-muted small">${entry.env}</td>
+      <td class="log-desc truncate">${entry.message}</td>
       <td></td>
     `;
 
@@ -171,7 +158,9 @@ function renderTable() {
     expand.innerHTML = `
       <td colspan="5">
         <pre class="expanded-content">${
-          obj ? JSON.stringify(obj, null, 2) : line
+          entry.structured
+            ? JSON.stringify(entry.raw, null, 2)
+            : entry.raw
         }</pre>
       </td>
     `;
