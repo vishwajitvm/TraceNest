@@ -1,0 +1,79 @@
+# =========================
+# Python bytecode & cache
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Virtual environments
+# =========================
+.env
+.venv
+env/
+venv/
+ENV/
+.python-version
+
+# =========================
+# Build & packaging artifacts
+# =========================
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# =========================
+# PyPI / setuptools
+# =========================
+MANIFEST
+setup.cfg
+
+# =========================
+# Test & coverage artifacts
+# =========================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# =========================
+# Logs (CRITICAL FOR TraceNest)
+# =========================
+TraceNestLogs/
+logs/
+*.log
+
+# =========================
+# IDE / Editor settings
+# =========================
+.vscode/
+.idea/
+*.iml
+
+# =========================
+# OS-specific files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Docker
+# =========================
+*.tar
+docker-compose.override.yml
+
+# =========================
+# Documentation builds
+# =========================
+docs/_build/
+
+# =========================
+# Temporary / backup files
+# =========================
+*.swp
+*.swo
+*~
