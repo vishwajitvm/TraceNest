@@ -17,11 +17,10 @@ tracenest/
 │   ├── ui/
 │   │   ├── __init__.py
 │   │   ├── router.py
-│   │   ├── templates/
-│   │   └── static/
-│   │       ├── css/
-│   │       ├── js/
-│   │       └── themes/
+│   │   └── templates/
+│   │       ├── style.css
+│   │       ├── app.js
+│   │       └── index.html
 │   ├── fastapi/
 │   │   ├── __init__.py
 │   │   └── middleware.py
@@ -193,7 +192,6 @@ ui/
 ├── __init__.py
 ├── router.py
 ├── templates/
-└── static/
 ```
 
 ### router.py
@@ -204,8 +202,6 @@ ui/
 ### templates/
 - HTML templates
 - Minimal rendering logic
-
-### static/
 - JavaScript
 - CSS
 - Themes (light, dark, blue-dark)
