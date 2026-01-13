@@ -1,3 +1,6 @@
+uvicorn examples.fastapi_app:app --reload
+
+
 # TraceNest Development Phases
 
 This document outlines the development phases for TraceNest, from the core runtime to the final user-facing features.
