@@ -5,12 +5,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tracenest"
-version = "0.1.0"
+version = "0.1.1"
 description = "Developer-first, local-first logging infrastructure for Python applications"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
 requires-python = ">=3.9"
-dynamic = []
 
 authors = [
   { name = "VishwajitVM", email = "vishwajitmall50@gmail.com" }
@@ -39,8 +38,6 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Operating System :: OS Independent"
 ]
-
-dependencies = []
 
 
 [project.optional-dependencies]
