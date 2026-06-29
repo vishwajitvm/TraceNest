@@ -1,4 +1,5 @@
 import os
+import builtins
 from pathlib import Path
 
 import pytest
@@ -126,6 +127,7 @@ def test_writer_drops_buffer_on_write_failure(tmp_path, monkeypatch):
     log_root = get_log_root_path()
 
     # Force open() to fail
+    original_open = builtins.open
     def _bad_open(*args, **kwargs):
         raise OSError("disk error")
 
@@ -135,7 +137,7 @@ def test_writer_drops_buffer_on_write_failure(tmp_path, monkeypatch):
     writer.flush()
 
     # Restore open and ensure no stale buffer retries
-    monkeypatch.undo()
+    monkeypatch.setattr("builtins.open", original_open)
 
     writer.write("y")
     writer.flush()

@@ -189,13 +189,16 @@ class Logger:
     """
 
     def debug(self, message: Any, **metadata: Any) -> None:
-        _log(level="DEBUG", message=message, metadata=metadata)
+        trace_id = metadata.pop("trace_id", None)
+        _log(level="DEBUG", message=message, metadata=metadata, trace_id=trace_id)
 
     def info(self, message: Any, **metadata: Any) -> None:
-        _log(level="INFO", message=message, metadata=metadata)
+        trace_id = metadata.pop("trace_id", None)
+        _log(level="INFO", message=message, metadata=metadata, trace_id=trace_id)
 
     def warning(self, message: Any, **metadata: Any) -> None:
-        _log(level="WARNING", message=message, metadata=metadata)
+        trace_id = metadata.pop("trace_id", None)
+        _log(level="WARNING", message=message, metadata=metadata, trace_id=trace_id)
 
     def error(
         self,
@@ -205,12 +208,14 @@ class Logger:
         exc_info: bool = False,
         **metadata: Any,
     ) -> None:
+        trace_id = metadata.pop("trace_id", None)
         _log(
             level="ERROR",
             message=message,
             metadata=metadata,
             exception=exception,
             exc_info=exc_info,
+            trace_id=trace_id,
         )
 
     def critical(
@@ -221,12 +226,14 @@ class Logger:
         exc_info: bool = False,
         **metadata: Any,
     ) -> None:
+        trace_id = metadata.pop("trace_id", None)
         _log(
             level="CRITICAL",
             message=message,
             metadata=metadata,
             exception=exception,
             exc_info=exc_info,
+            trace_id=trace_id,
         )
 
     def log(

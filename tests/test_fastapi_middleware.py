@@ -22,14 +22,14 @@ class _CaptureWriter:
 
 
 def _install_capture_writer(monkeypatch):
-    from tracenest import logger as logger_module
-
+    import sys
+    import tracenest.logger
     cap = _CaptureWriter()
 
     def _fake_get_writer():
         return cap
 
-    monkeypatch.setattr(logger_module, "_get_writer", _fake_get_writer)
+    monkeypatch.setattr(sys.modules["tracenest.logger"], "_get_writer", _fake_get_writer)
     return cap
 
 

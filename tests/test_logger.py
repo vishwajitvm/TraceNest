@@ -25,14 +25,14 @@ def _install_capture_writer(monkeypatch):
     """
     Monkeypatch the writer used by logger to capture output.
     """
-    from tracenest import logger as logger_module
-
+    import sys
+    import tracenest.logger
     cap = _CaptureWriter()
 
     def _fake_get_writer():
         return cap
 
-    monkeypatch.setattr(logger_module, "_get_writer", _fake_get_writer)
+    monkeypatch.setattr(sys.modules["tracenest.logger"], "_get_writer", _fake_get_writer)
     return cap
 
 
@@ -102,7 +102,7 @@ def test_recursive_logging_is_prevented(monkeypatch):
     """
     If writer.write triggers another log call, recursion must stop.
     """
-    from tracenest import logger as logger_module
+    import tracenest.logger as logger_module
 
     calls = {"count": 0}
 
@@ -115,7 +115,9 @@ def test_recursive_logging_is_prevented(monkeypatch):
     def _fake_get_writer():
         return RecursiveWriter()
 
-    monkeypatch.setattr(logger_module, "_get_writer", _fake_get_writer)
+    import sys
+    import tracenest.logger
+    monkeypatch.setattr(sys.modules["tracenest.logger"], "_get_writer", _fake_get_writer)
 
     logger.info("start")
 

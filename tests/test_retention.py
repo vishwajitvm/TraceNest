@@ -15,6 +15,12 @@ def _touch_with_mtime(path: Path, mtime: float) -> None:
     path.write_text("x", encoding="utf-8")
     os.utime(path, (mtime, mtime))
 
+import pytest
+@pytest.fixture(autouse=True)
+def reset_retention_cooldown():
+    import tracenest.core.retention as ret
+    ret._LAST_RETENTION_RUN = None
+
 
 def _today_name() -> str:
     from datetime import datetime
