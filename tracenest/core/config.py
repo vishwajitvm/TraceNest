@@ -18,7 +18,7 @@ from typing import Final
 # =====================================================================
 
 PROJECT_NAME: Final[str] = "TraceNest"
-PROJECT_VERSION: Final[str] = "0.1.3"
+PROJECT_VERSION: Final[str] = "0.1.4"
 
 # =====================================================================
 # Logging Directory & Paths

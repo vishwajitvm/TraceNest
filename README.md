@@ -140,23 +140,25 @@ Automatically logs:
 
 ---
 
-## Safety and Customization
+## Safety and Performance
 
-TraceNest is designed to work perfectly out-of-the-box. There is no complex configuration needed. Just import and log!
+TraceNest is designed to be production-safe.
 
-## Changelog
-
-### Version 0.1.3
-- **Fixed UI Delay Issue:** Implemented a background flush thread that automatically syncs buffered logs to the disk every 1 second, completely resolving the 2-10 minute UI delay on low-traffic applications.
-- **Auto-Refreshing UI:** The web UI now features automatic polling, instantly displaying new logs as soon as they are written without requiring manual page reloads.
-
-## Development & Testing
+- Never blocks application execution
 - Uses buffered I/O
 - Minimal memory footprint
 - Graceful fallback on failure
 - Works inside Docker and containers
 
 TraceNest will **never crash your application**.
+
+---
+
+## Changelog
+
+### Version 0.1.3
+- **Fixed UI Delay Issue:** Implemented a background flush thread that automatically syncs buffered logs to the disk every 1 second, completely resolving the 2-10 minute UI delay on low-traffic applications.
+- **Auto-Refreshing UI:** The web UI now features automatic polling, instantly displaying new logs as soon as they are written without requiring manual page reloads.
 
 ---
 
@@ -180,7 +182,7 @@ Detailed documentation is available in the `docs/` folder:
 
 TraceNest follows semantic versioning.
 
-### Current Version: `0.1.0`
+### Current Version: `0.1.4`
 
 Includes:
 - Core logging API
