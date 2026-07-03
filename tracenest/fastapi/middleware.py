@@ -19,7 +19,8 @@ from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from ..logger import logger
-from ..core.config import FASTAPI_EXCLUDED_PATHS
+from ..core.config import FASTAPI_EXCLUDED_PATHS, REDACT_REQUEST_HEADERS
+from ..security.redaction import redact_dict
 
 
 class TraceNestMiddleware(BaseHTTPMiddleware):
@@ -36,6 +37,14 @@ class TraceNestMiddleware(BaseHTTPMiddleware):
 
         trace_id = uuid.uuid4().hex
         start_time = time.perf_counter()
+        
+        # Prepare headers & cookies safely
+        headers = dict(request.headers) if hasattr(request, "headers") else {}
+        cookies = dict(request.cookies) if hasattr(request, "cookies") else {}
+        
+        if REDACT_REQUEST_HEADERS:
+            headers = redact_dict(headers)
+            cookies = redact_dict(cookies)
 
         try:
             response = await call_next(request)
@@ -50,6 +59,8 @@ class TraceNestMiddleware(BaseHTTPMiddleware):
                 duration_ms=round(duration_ms, 2),
                 client=request.client.host if request.client else None,
                 trace_id=trace_id,
+                headers=headers,
+                cookies=cookies,
             )
 
             return response
@@ -64,8 +75,11 @@ class TraceNestMiddleware(BaseHTTPMiddleware):
                 duration_ms=round(duration_ms, 2),
                 client=request.client.host if request.client else None,
                 trace_id=trace_id,
+                headers=headers,
+                cookies=cookies,
                 exception=exc,
             )
 
             # Re-raise so FastAPI can handle it
             raise
+

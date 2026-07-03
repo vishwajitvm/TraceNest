@@ -33,6 +33,7 @@ from .config import (
     MAX_LOG_RECORD_SIZE_BYTES,
     FAIL_SILENTLY,
 )
+from ..security.redaction import redact_any, redact_string, redact_dict
 
 # =====================================================================
 # Time helpers
@@ -216,6 +217,7 @@ def format_log(
     try:
         ts = _utc_now_iso()
         msg = _truncate(str(message), MAX_MESSAGE_LENGTH)
+        msg = redact_string(msg)
 
         record: Dict[str, Any] = {
             # ---- schema identity ----
@@ -234,7 +236,7 @@ def format_log(
             "env": _get_env(),
 
             # ---- structured metadata ----
-            "meta": _sanitize_metadata(metadata),
+            "meta": _sanitize_metadata(redact_dict(metadata) if metadata else None),
 
             # ---- runtime context ----
             "ctx": _get_runtime_context(),
@@ -251,6 +253,8 @@ def format_log(
         if exception:
             exc = _format_exception(exception)
             if exc:
+                exc["message"] = redact_string(exc["message"])
+                exc["stack"] = redact_string(exc["stack"])
                 record["exc"] = exc
 
         serialized = json.dumps(
@@ -258,6 +262,8 @@ def format_log(
             ensure_ascii=False,
             sort_keys=True,
         )
+
+        serialized = redact_string(serialized)
 
         # Final absolute size guard
         if len(serialized) > MAX_LOG_RECORD_SIZE_BYTES:

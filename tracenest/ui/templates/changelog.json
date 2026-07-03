@@ -1,5 +1,16 @@
 [
   {
+    "version": "0.1.6",
+    "date": "2026-07-03",
+    "changes": [
+      "Added built-in secret redaction to prevent credentials, tokens, and keys from leaking in logs.",
+      "Added recursive masking for dictionaries, lists, request data, and response data.",
+      "Added pattern-based masking for raw log strings, DB URLs, and Authorization headers.",
+      "Logs are now redacted before storage and before UI display for defense-in-depth safety.",
+      "Added configuration options for custom sensitive keys and redaction mask."
+    ]
+  },
+  {
     "version": "0.1.5",
     "date": "2026-07-03",
     "changes": [

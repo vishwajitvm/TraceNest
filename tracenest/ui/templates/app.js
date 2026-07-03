@@ -305,7 +305,7 @@ if (changelogModal) {
   changelogModal.addEventListener('show.bs.modal', async () => {
     const body = document.getElementById('changelog-body');
     try {
-      const res = await fetch('/tracenest/changelog.json');
+      const res = await fetch('changelog.json');
       if (!res.ok) throw new Error("Not found");
       const data = await res.json();
       

@@ -46,13 +46,15 @@ def _list_log_files() -> List[str]:
 
 
 def _read_log_file(filename: str, limit: int = 500) -> List[str]:
+    from ..security.redaction import redact_string
     path = LOG_DIR / filename
     if not path.exists() or not path.is_file():
         return []
 
     try:
         with path.open("r", encoding="utf-8", errors="ignore") as f:
-            return f.readlines()[-limit:]
+            lines = f.readlines()[-limit:]
+            return [redact_string(line) for line in lines]
     except Exception:
         return []
 

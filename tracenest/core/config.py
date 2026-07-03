@@ -18,7 +18,7 @@ from typing import Final
 # =====================================================================
 
 PROJECT_NAME: Final[str] = "TraceNest"
-PROJECT_VERSION: Final[str] = "0.1.4"
+PROJECT_VERSION: Final[str] = "0.1.6"
 
 # =====================================================================
 # Logging Directory & Paths
@@ -208,4 +208,31 @@ MAX_LOG_RECORD_SIZE_BYTES = 50 * 1024  # 50 KB
 
 # Maximum exception stack trace length
 MAX_EXCEPTION_STACK_LENGTH = 20 * 1024  # 20 KB
+
+# =====================================================================
+# Security & Secret Redaction
+# =====================================================================
+
+# Enable secret redaction by default (always safe)
+MASK_SECRETS: Final[bool] = True
+
+# Mask character to replace secrets with
+REDACTION_MASK: Final[str] = "********"
+
+# Keys that trigger dictionary value redaction
+SENSITIVE_KEYS: Final[set[str]] = {
+    "password", "passwd", "pwd", "secret", "token", "access_token",
+    "refresh_token", "id_token", "api_key", "apikey", "private_key",
+    "client_secret", "authorization", "auth", "cookie", "set-cookie",
+    "session", "csrf", "jwt", "bearer", "database_url", "db_url",
+    "redis_url", "mongo_url", "mongodb_uri", "postgres_url", "mysql_url",
+    "openai_api_key", "anthropic_api_key", "groq_api_key", "aws_access_key_id",
+    "aws_secret_access_key", "aws_session_token", "github_token",
+    "stripe_secret_key", "razorpay_key_secret", "smtp_password"
+}
+
+# Middleware safety redaction toggles
+REDACT_REQUEST_HEADERS: Final[bool] = True
+REDACT_REQUEST_BODY: Final[bool] = True
+REDACT_RESPONSE_BODY: Final[bool] = True
 
