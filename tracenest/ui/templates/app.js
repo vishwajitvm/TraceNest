@@ -258,6 +258,18 @@ function resetState() {
 }
 
 /* -------------------------------
-   INIT
+   INIT & AUTO-REFRESH
 -------------------------------- */
 renderSidebar();
+
+// Automatically fetch new logs every 2 seconds
+setInterval(async () => {
+  if (currentFile) {
+    const newLines = await fetchLines(currentFile);
+    // If the number of lines changed, update the UI automatically
+    if (newLines.length !== logLines.length) {
+      logLines = newLines;
+      renderTable();
+    }
+  }
+}, 2000);

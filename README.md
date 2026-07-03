@@ -140,11 +140,17 @@ Automatically logs:
 
 ---
 
-## Safety and Performance
+## Safety and Customization
 
-TraceNest is designed to be production-safe.
+TraceNest is designed to work perfectly out-of-the-box. There is no complex configuration needed. Just import and log!
 
-- Never blocks application execution
+## Changelog
+
+### Version 0.1.3
+- **Fixed UI Delay Issue:** Implemented a background flush thread that automatically syncs buffered logs to the disk every 1 second, completely resolving the 2-10 minute UI delay on low-traffic applications.
+- **Auto-Refreshing UI:** The web UI now features automatic polling, instantly displaying new logs as soon as they are written without requiring manual page reloads.
+
+## Development & Testing
 - Uses buffered I/O
 - Minimal memory footprint
 - Graceful fallback on failure

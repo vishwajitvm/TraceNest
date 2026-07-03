@@ -5,8 +5,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tracenest"
-version = "0.1.2"
-description = "Developer-first, local-first logging infrastructure for Python applications"
+version = "0.1.3"
+description = "A powerful, local-first logging ecosystem with a built-in UI."
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
 requires-python = ">=3.9"

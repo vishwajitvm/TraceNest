@@ -39,7 +39,7 @@ from .retention import enforce_retention
 
 class LogWriter:
     """
-    Buffered, thread-safe, best-effort log writer.
+    Buffered, thread-safe, best-effort log writer with background periodic flushing.
     """
 
     def __init__(self) -> None:
@@ -48,6 +48,10 @@ class LogWriter:
         self._current_file: Optional[Path] = None
         self._pid = os.getpid()
         self._shutting_down = False
+        
+        # We will flush every 1 second automatically to prevent UI delays
+        self._flush_interval = 1.0 
+        self._flush_thread = threading.Thread(target=self._periodic_flush, daemon=True)
 
         self._initialize()
 
@@ -57,10 +61,22 @@ class LogWriter:
                 atexit.register(self._shutdown_flush)
             except Exception:
                 pass
+                
+        # Start background flushing thread
+        self._flush_thread.start()
 
     # -----------------------------------------------------------------
     # Initialization & lifecycle
     # -----------------------------------------------------------------
+
+    def _periodic_flush(self) -> None:
+        """Background thread that flushes the buffer periodically."""
+        import time
+        while not self._shutting_down:
+            time.sleep(self._flush_interval)
+            # Only attempt to lock and flush if there's actually something in the buffer
+            if self._buffer:
+                self.flush()
 
     def _initialize(self) -> None:
         try:
