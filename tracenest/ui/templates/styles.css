@@ -77,6 +77,13 @@ body {
   font-size: 12px;
   font-weight: 600;
   color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.badge-filter:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .bg-debug { background: var(--debug); }
@@ -89,11 +96,22 @@ body {
   border-bottom: 1px solid var(--border);
   color: #94a3b8;
   font-weight: 500;
+  padding-bottom: 12px;
 }
 
 .custom-table td {
   border-bottom: 1px solid var(--border);
-  padding: 10px 8px;
+  padding: 12px 8px;
+  vertical-align: middle;
+}
+
+.log-row {
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.log-row:hover {
+  background-color: var(--hover);
 }
 
 .log-desc {

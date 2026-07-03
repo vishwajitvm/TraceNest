@@ -88,6 +88,14 @@ def tracenest_styles_css():
     )
 
 
+@router.get("/changelog.json")
+def tracenest_changelog_json():
+    return FileResponse(
+        TEMPLATES_DIR / "changelog.json",
+        media_type="application/json",
+    )
+
+
 # ─────────────────────────────────────────────
 # API ROUTES
 # ─────────────────────────────────────────────

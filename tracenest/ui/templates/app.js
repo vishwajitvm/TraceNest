@@ -73,6 +73,26 @@ function matchesSearch(line) {
   return !searchTerm || line.toLowerCase().includes(searchTerm);
 }
 
+function timeAgo(dateString) {
+  if (dateString === "—") return "—";
+  const date = new Date(dateString);
+  if (isNaN(date.valueOf())) return dateString;
+  
+  const seconds = Math.floor((new Date() - date) / 1000);
+  let interval = Math.floor(seconds / 31536000);
+  if (interval >= 1) return interval + " year" + (interval === 1 ? "" : "s") + " ago";
+  interval = Math.floor(seconds / 2592000);
+  if (interval >= 1) return interval + " month" + (interval === 1 ? "" : "s") + " ago";
+  interval = Math.floor(seconds / 86400);
+  if (interval >= 1) return interval + " day" + (interval === 1 ? "" : "s") + " ago";
+  interval = Math.floor(seconds / 3600);
+  if (interval >= 1) return interval + " hour" + (interval === 1 ? "" : "s") + " ago";
+  interval = Math.floor(seconds / 60);
+  if (interval >= 1) return interval + " minute" + (interval === 1 ? "" : "s") + " ago";
+  if (seconds < 30) return "just now";
+  return Math.max(0, Math.floor(seconds)) + " seconds ago";
+}
+
 /* -------------------------------
    API
 -------------------------------- */
@@ -113,7 +133,7 @@ async function selectFile(file, el) {
   el.classList.add("active");
 
   currentFile = file;
-  logLines = await fetchLines(file);
+  logLines = (await fetchLines(file)).reverse();
 
   resetState();
   renderTable();
@@ -145,9 +165,12 @@ function renderTable() {
   page.forEach(entry => {
     const row = document.createElement("tr");
     row.className = "log-row";
+    const displayTime = entry.timestamp === "—" ? "—" : timeAgo(entry.timestamp);
+    const titleTime = entry.timestamp === "—" ? "" : new Date(entry.timestamp).toLocaleString();
+    
     row.innerHTML = `
-      <td><span class="text-${entry.level} fw-bold">● ${entry.level}</span></td>
-      <td class="text-muted small">${entry.timestamp}</td>
+      <td><span class="badge bg-${entry.level} text-white px-2 py-1" style="font-size: 11px;">${entry.level.toUpperCase()}</span></td>
+      <td class="text-muted small" title="${titleTime}" style="cursor: help;">${displayTime}</td>
       <td class="text-muted small">${entry.env}</td>
       <td class="log-desc truncate">${entry.message}</td>
       <td></td>
@@ -268,8 +291,40 @@ setInterval(async () => {
     const newLines = await fetchLines(currentFile);
     // If the number of lines changed, update the UI automatically
     if (newLines.length !== logLines.length) {
-      logLines = newLines;
+      logLines = newLines.reverse();
       renderTable();
     }
   }
 }, 2000);
+
+/* -------------------------------
+   CHANGELOG MODAL
+-------------------------------- */
+const changelogModal = document.getElementById('changelogModal');
+if (changelogModal) {
+  changelogModal.addEventListener('show.bs.modal', async () => {
+    const body = document.getElementById('changelog-body');
+    try {
+      const res = await fetch('/tracenest/changelog.json');
+      if (!res.ok) throw new Error("Not found");
+      const data = await res.json();
+      
+      let html = '';
+      data.forEach(release => {
+        html += `<div class="mb-4">
+          <h6 class="fw-bold d-flex align-items-center gap-2">
+            <span class="badge bg-primary rounded-pill">v${release.version}</span>
+            <span class="text-muted small fw-normal">${release.date}</span>
+          </h6>
+          <ul class="text-muted small mb-0" style="line-height: 1.6;">`;
+        release.changes.forEach(change => {
+          html += `<li>${change}</li>`;
+        });
+        html += `</ul></div>`;
+      });
+      body.innerHTML = html || '<div class="text-center text-muted">No history found.</div>';
+    } catch (err) {
+      body.innerHTML = '<div class="text-center text-danger">Failed to load changelog.</div>';
+    }
+  });
+}

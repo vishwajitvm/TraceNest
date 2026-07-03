@@ -1,0 +1,21 @@
+[
+  {
+    "version": "0.1.5",
+    "date": "2026-07-03",
+    "changes": [
+      "Latest logs are now shown first by default (reverse chronological order).",
+      "Added beautiful UI badges for log levels to improve readability.",
+      "Timestamps converted to readable relative times (e.g. '2 minutes ago') with exact time on hover.",
+      "Added this Versions changelog UI.",
+      "Enhanced overall UI aesthetics with animations, shadow effects, and a premium feel."
+    ]
+  },
+  {
+    "version": "0.1.4",
+    "date": "2026-07-02",
+    "changes": [
+      "Initial stable release with dynamic UI and real-time log tailing.",
+      "Search, filter, and pagination capabilities added."
+    ]
+  }
+]
