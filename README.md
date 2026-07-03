@@ -156,9 +156,34 @@ TraceNest will **never crash your application**.
 
 ## Changelog
 
-### Version 0.1.3
-- **Fixed UI Delay Issue:** Implemented a background flush thread that automatically syncs buffered logs to the disk every 1 second, completely resolving the 2-10 minute UI delay on low-traffic applications.
-- **Auto-Refreshing UI:** The web UI now features automatic polling, instantly displaying new logs as soon as they are written without requiring manual page reloads.
+### v0.1.7 - 2026-07-03
+* Markdown-based changelog system directly integrated into the UI.
+* Dynamic Versions modal featuring a beautiful two-pane layout, fetching and rendering markdown using `marked.js`.
+* Synced main project `README.md` with the full project changelog to ensure release notes are visible directly on PyPI.
+* Improved UI links, adding proper developer attribution linking back to GitHub in the UI footer.
+* Removed the static `changelog.json` in favor of the dynamic API.
+
+### v0.1.6 - 2026-07-03
+* Added built-in secret redaction to prevent credentials, tokens, API keys, cookies, and database passwords from leaking in logs.
+* Added recursive masking for dictionaries, lists, nested metadata, request data, and response data.
+* Added pattern-based masking for raw log strings, Authorization headers, JWTs, database URLs, Redis URLs, and key-value secrets.
+* Logs are now redacted before storage and before UI/API display for defense-in-depth safety.
+* Middleware logging now masks sensitive headers, cookies, request bodies, and response bodies.
+* Added tests for key-based redaction, regex redaction, nested data structures, middleware safety, and custom redaction configuration.
+
+### v0.1.5 - 2026-07-03
+* Latest logs are now shown first by default (reverse chronological order).
+* Added beautiful UI badges for log levels to improve readability.
+* Timestamps converted to readable relative times (e.g. '2 minutes ago') with exact time on hover.
+* Enhanced overall UI aesthetics with animations, shadow effects, and a premium feel.
+
+### Version 0.1.4 - 2026-07-02
+* Initial stable release with dynamic UI and real-time log tailing.
+* Search, filter, and pagination capabilities added.
+
+### Version 0.1.3 - 2026-07-01
+* **Fixed UI Delay Issue:** Implemented a background flush thread that automatically syncs buffered logs to the disk every 1 second, completely resolving the 2-10 minute UI delay on low-traffic applications.
+* **Auto-Refreshing UI:** The web UI now features automatic polling, instantly displaying new logs as soon as they are written without requiring manual page reloads.
 
 ---
 
@@ -182,7 +207,7 @@ Detailed documentation is available in the `docs/` folder:
 
 TraceNest follows semantic versioning.
 
-### Current Version: `0.1.4`
+### Current Version: `0.1.7`
 
 Includes:
 - Core logging API

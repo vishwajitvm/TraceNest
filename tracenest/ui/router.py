@@ -15,6 +15,7 @@ LOG_DIR = BASE_DIR / "TraceNestLogs"
 
 UI_DIR = Path(__file__).parent
 TEMPLATES_DIR = UI_DIR / "templates"
+CHANGELOGS_DIR = BASE_DIR / "changelogs"
 
 # ─────────────────────────────────────────────
 # Router
@@ -90,12 +91,30 @@ def tracenest_styles_css():
     )
 
 
-@router.get("/changelog.json")
-def tracenest_changelog_json():
-    return FileResponse(
-        TEMPLATES_DIR / "changelog.json",
-        media_type="application/json",
-    )
+@router.get("/api/changelogs")
+def list_changelogs():
+    try:
+        if not CHANGELOGS_DIR.exists():
+            return JSONResponse({"versions": []})
+        versions = [f.stem for f in CHANGELOGS_DIR.iterdir() if f.is_file() and f.suffix == ".md"]
+        # Sort versions properly (e.g. v0.1.6 > v0.1.5)
+        versions.sort(key=lambda x: [int(p) if p.isdigit() else p for p in x.replace('v', '').split('.')], reverse=True)
+        return JSONResponse({"versions": versions})
+    except Exception:
+        return JSONResponse({"versions": []})
+
+
+@router.get("/api/changelogs/{version}")
+def get_changelog(version: str):
+    path = CHANGELOGS_DIR / f"{version}.md"
+    if not path.exists() or not path.is_file():
+        return JSONResponse({"error": "Version not found"}, status_code=404)
+    
+    try:
+        content = path.read_text(encoding="utf-8", errors="ignore")
+        return JSONResponse({"version": version, "content": content})
+    except Exception:
+        return JSONResponse({"error": "Failed to read version"}, status_code=500)
 
 
 # ─────────────────────────────────────────────

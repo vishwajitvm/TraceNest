@@ -303,28 +303,53 @@ setInterval(async () => {
 const changelogModal = document.getElementById('changelogModal');
 if (changelogModal) {
   changelogModal.addEventListener('show.bs.modal', async () => {
-    const body = document.getElementById('changelog-body');
+    const sidebar = document.getElementById('changelog-sidebar');
+    const content = document.getElementById('changelog-content');
+    
     try {
-      const res = await fetch('changelog.json');
+      const res = await fetch('/tracenest/api/changelogs');
       if (!res.ok) throw new Error("Not found");
       const data = await res.json();
       
-      let html = '';
-      data.forEach(release => {
-        html += `<div class="mb-4">
-          <h6 class="fw-bold d-flex align-items-center gap-2">
-            <span class="badge bg-primary rounded-pill">v${release.version}</span>
-            <span class="text-muted small fw-normal">${release.date}</span>
-          </h6>
-          <ul class="text-muted small mb-0" style="line-height: 1.6;">`;
-        release.changes.forEach(change => {
-          html += `<li>${change}</li>`;
-        });
-        html += `</ul></div>`;
+      if (!data.versions || data.versions.length === 0) {
+        sidebar.innerHTML = '<div class="p-3 text-muted small">No versions found.</div>';
+        return;
+      }
+      
+      let html = '<div class="list-group list-group-flush bg-transparent">';
+      data.versions.forEach(v => {
+        html += `<button class="list-group-item list-group-item-action border-0 py-3 fw-medium" style="background: transparent;" onclick="loadChangelog('${v}')">${v}</button>`;
       });
-      body.innerHTML = html || '<div class="text-center text-muted">No history found.</div>';
+      html += '</div>';
+      sidebar.innerHTML = html;
+      
+      // Load the first one by default
+      loadChangelog(data.versions[0]);
     } catch (err) {
-      body.innerHTML = '<div class="text-center text-danger">Failed to load changelog.</div>';
+      sidebar.innerHTML = '<div class="p-3 text-danger small">Failed to load.</div>';
     }
   });
 }
+
+window.loadChangelog = async (version) => {
+  const content = document.getElementById('changelog-content');
+  content.innerHTML = '<div class="text-muted h-100 d-flex align-items-center justify-content-center">Loading...</div>';
+  
+  // Update active state
+  document.querySelectorAll('#changelog-sidebar .list-group-item').forEach(btn => {
+    if (btn.textContent === version) {
+      btn.classList.add('bg-primary', 'text-white');
+    } else {
+      btn.classList.remove('bg-primary', 'text-white');
+    }
+  });
+  
+  try {
+    const res = await fetch(`/tracenest/api/changelogs/${version}`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    content.innerHTML = marked.parse(data.content || "No content.");
+  } catch (err) {
+    content.innerHTML = '<div class="text-danger h-100 d-flex align-items-center justify-content-center">Failed to load version notes.</div>';
+  }
+};

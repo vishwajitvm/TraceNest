@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.7 - 2026-07-03
+
+### Added
+* Markdown-based changelog system directly integrated into the UI.
+* Dynamic Versions modal featuring a beautiful two-pane layout, fetching and rendering markdown using `marked.js`.
+* Synced main project `README.md` with the full project changelog to ensure release notes are visible directly on PyPI.
+
+### Changed
+* Improved UI links, adding proper developer attribution linking back to GitHub in the UI footer.
+* Removed the static `changelog.json` in favor of the dynamic API.
+
+
 ## v0.1.6 - 2026-07-03
 
 ### Added
