@@ -156,6 +156,9 @@ TraceNest will **never crash your application**.
 
 ## Changelog
 
+### v0.1.14 - 2026-07-16
+* Fixed a Mermaid syntax error in the documentation (`01_introduction.md`) that caused the high-level architecture diagram to fail to render on GitHub.
+
 ### v0.1.13 - 2026-07-16
 * Completely rebuilt the `docs/` folder with an exhaustive, beginner-friendly 14-chapter Master Guide! Everything from core concepts (Configuration, Formatter, Retention, Rotation) to Advanced Customizations and Troubleshooting is now thoroughly explained with examples and diagrams.
 
@@ -236,7 +239,7 @@ Detailed documentation is available in the `docs/` folder:
 
 TraceNest follows semantic versioning.
 
-### Current Version: `0.1.13`
+### Current Version: `0.1.14`
 
 Includes:
 - Core logging API

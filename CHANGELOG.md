@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.14 - 2026-07-16
+
+### Fixed
+* Fixed a Mermaid syntax error in the documentation (`01_introduction.md`) that caused the high-level architecture diagram to fail to render on GitHub.
+
 ## v0.1.13 - 2026-07-16
 
 ### Added

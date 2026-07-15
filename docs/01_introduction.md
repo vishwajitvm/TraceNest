@@ -28,7 +28,7 @@ Here is a simple diagram showing how information travels from your Python code i
 
 ```mermaid
 graph LR
-    A[Your Python Code] -->|logger.info()| B(TraceNest Core)
+    A[Your Python Code] -->|"logger.info()"| B(TraceNest Core)
     B -->|Formats into JSON| C(Log File on Disk)
     C -->|Read by Dashboard| D[TraceNest Web UI]
     
