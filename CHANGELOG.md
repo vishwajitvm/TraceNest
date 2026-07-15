@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.11 - 2026-07-15
+
+### Added
+* 4 Beautiful New Themes: Emerald (Green), Ruby (Red), Amethyst (Purple), and Midnight (OLED High Contrast).
+* Redesigned footer showcasing the current TraceNest version and developer credit.
+
+### Fixed
+* Fixed search input box retaining a white background when using dark themes.
+
 ## v0.1.10 - 2026-07-15
 
 ### Fixed

@@ -156,6 +156,11 @@ TraceNest will **never crash your application**.
 
 ## Changelog
 
+### v0.1.11 - 2026-07-15
+* 4 Beautiful New Themes: Emerald (Green), Ruby (Red), Amethyst (Purple), and Midnight (OLED High Contrast).
+* Redesigned footer showcasing the current TraceNest version and developer credit.
+* Fixed search input box retaining a white background when using dark themes.
+
 ### v0.1.10 - 2026-07-15
 * Fixed white background issue on table rows and dropdown menus when using Dark or Dark Blue themes. All components now properly inherit theme colors.
 
@@ -225,7 +230,7 @@ Detailed documentation is available in the `docs/` folder:
 
 TraceNest follows semantic versioning.
 
-### Current Version: `0.1.10`
+### Current Version: `0.1.11`
 
 Includes:
 - Core logging API
