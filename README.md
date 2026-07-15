@@ -156,6 +156,9 @@ TraceNest will **never crash your application**.
 
 ## Changelog
 
+### v0.1.13 - 2026-07-16
+* Completely rebuilt the `docs/` folder with an exhaustive, beginner-friendly 14-chapter Master Guide! Everything from core concepts (Configuration, Formatter, Retention, Rotation) to Advanced Customizations and Troubleshooting is now thoroughly explained with examples and diagrams.
+
 ### v0.1.12 - 2026-07-15
 * Fixed z-index issue causing the dropdown menus (Levels and Themes) to incorrectly render underneath the sticky table headers.
 
@@ -233,7 +236,7 @@ Detailed documentation is available in the `docs/` folder:
 
 TraceNest follows semantic versioning.
 
-### Current Version: `0.1.12`
+### Current Version: `0.1.13`
 
 Includes:
 - Core logging API

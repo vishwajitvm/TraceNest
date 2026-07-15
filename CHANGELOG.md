@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.13 - 2026-07-16
+
+### Added
+* Completely rebuilt the `docs/` folder with an exhaustive, beginner-friendly 14-chapter Master Guide! Everything from core concepts (Configuration, Formatter, Retention, Rotation) to Advanced Customizations and Troubleshooting is now thoroughly explained with examples and diagrams.
+
 ## v0.1.12 - 2026-07-15
 
 ### Fixed
