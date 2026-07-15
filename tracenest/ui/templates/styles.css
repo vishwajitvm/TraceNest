@@ -187,6 +187,11 @@
   }
   
   /* HEADER & FILTERS */
+  header {
+    position: relative;
+    z-index: 1050;
+  }
+  
   .custom-search .input-group-text, .custom-search input {
     border-color: var(--border) !important;
     color: var(--text-main) !important;

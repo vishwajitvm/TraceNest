@@ -156,6 +156,9 @@ TraceNest will **never crash your application**.
 
 ## Changelog
 
+### v0.1.12 - 2026-07-15
+* Fixed z-index issue causing the dropdown menus (Levels and Themes) to incorrectly render underneath the sticky table headers.
+
 ### v0.1.11 - 2026-07-15
 * 4 Beautiful New Themes: Emerald (Green), Ruby (Red), Amethyst (Purple), and Midnight (OLED High Contrast).
 * Redesigned footer showcasing the current TraceNest version and developer credit.
@@ -230,7 +233,7 @@ Detailed documentation is available in the `docs/` folder:
 
 TraceNest follows semantic versioning.
 
-### Current Version: `0.1.11`
+### Current Version: `0.1.12`
 
 Includes:
 - Core logging API

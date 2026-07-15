@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.12 - 2026-07-15
+
+### Fixed
+* Fixed z-index issue causing the dropdown menus (Levels and Themes) to incorrectly render underneath the sticky table headers. 
+
 ## v0.1.11 - 2026-07-15
 
 ### Added
