@@ -223,16 +223,17 @@
   
   /* TABLE */
   .custom-table {
-    color: var(--text-main);
+    color: var(--text-main) !important;
     border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
     width: 100%;
+    background-color: transparent !important;
   }
   .custom-table thead th {
-    background: var(--bg-header);
-    border-bottom: 1px solid var(--border);
-    color: var(--text-muted);
+    background: var(--bg-header) !important;
+    border-bottom: 1px solid var(--border) !important;
+    color: var(--text-muted) !important;
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
@@ -241,8 +242,10 @@
     z-index: 10;
   }
   .custom-table tbody td {
+    background-color: transparent !important;
+    color: var(--text-main) !important;
     padding: 8px 12px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border) !important;
     vertical-align: top;
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
@@ -253,13 +256,14 @@
   .custom-table tbody tr {
     cursor: pointer;
     transition: background-color 0.15s;
+    background-color: transparent !important;
   }
-  .custom-table tbody tr:hover { background-color: var(--hover) !important; }
-  .custom-table tbody tr.selected { background-color: var(--active) !important; }
+  .custom-table tbody tr:hover td { background-color: var(--hover) !important; }
+  .custom-table tbody tr.selected td { background-color: var(--active) !important; }
   
-  .log-msg { color: var(--text-main); }
-  .log-logger { color: var(--text-muted); }
-  .log-time { color: var(--text-muted); font-size: 11px;}
+  .log-msg { color: var(--text-main) !important; }
+  .log-logger { color: var(--text-muted) !important; }
+  .log-time { color: var(--text-muted) !important; font-size: 11px;}
   
   /* DETAILS PANEL */
   .details-panel {
@@ -323,11 +327,30 @@
   }
   
   /* DROPDOWNS */
-  .theme-menu { background: var(--bg-panel); border: 1px solid var(--border); }
-  .theme-menu .dropdown-item { color: var(--text-main); }
-  .theme-menu .dropdown-item:hover { background: var(--hover); }
-  .theme-menu .dropdown-item.active { background: var(--active); color: var(--text-main);}
-  .theme-menu .dropdown-header { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 11px;}
+  .dropdown-menu { 
+    background-color: var(--bg-panel) !important; 
+    border: 1px solid var(--border) !important; 
+  }
+  .dropdown-item { 
+    color: var(--text-main) !important; 
+  }
+  .dropdown-item:hover, .dropdown-item:focus { 
+    background-color: var(--hover) !important; 
+    color: var(--text-main) !important;
+  }
+  .dropdown-item.active, .dropdown-item:active { 
+    background-color: var(--active) !important; 
+    color: var(--text-main) !important;
+  }
+  .dropdown-divider {
+    border-color: var(--border) !important;
+  }
+  .dropdown-header { 
+    color: var(--text-muted) !important; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    font-size: 11px;
+  }
   
   /* PAGINATION */
   #pagination span {

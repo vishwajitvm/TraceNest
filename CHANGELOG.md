@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.10 - 2026-07-15
+
+### Fixed
+* Fixed white background issue on table rows and dropdown menus when using Dark or Dark Blue themes. All components now properly inherit theme colors.
+
 ## v0.1.9 - 2026-07-15
 
 ### Fixed

@@ -156,6 +156,9 @@ TraceNest will **never crash your application**.
 
 ## Changelog
 
+### v0.1.10 - 2026-07-15
+* Fixed white background issue on table rows and dropdown menus when using Dark or Dark Blue themes. All components now properly inherit theme colors.
+
 ### v0.1.9 - 2026-07-15
 * Fatal UI crash preventing logs from displaying on fresh installs due to a DOM mismatch.
 * Replaced inline level badges with a clean dropdown menu for improved UX.
@@ -222,7 +225,7 @@ Detailed documentation is available in the `docs/` folder:
 
 TraceNest follows semantic versioning.
 
-### Current Version: `0.1.9`
+### Current Version: `0.1.10`
 
 Includes:
 - Core logging API
