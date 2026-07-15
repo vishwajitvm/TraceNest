@@ -156,6 +156,11 @@ TraceNest will **never crash your application**.
 
 ## Changelog
 
+### v0.1.9 - 2026-07-15
+* Fatal UI crash preventing logs from displaying on fresh installs due to a DOM mismatch.
+* Replaced inline level badges with a clean dropdown menu for improved UX.
+* Removed the "Versions" modal entirely for a simpler, decluttered interface.
+
 ### v0.1.8 - 2026-07-15
 * Auto-refresh functionality to stream logs live in the dashboard without manually reloading.
 * Manual refresh button.
@@ -217,7 +222,7 @@ Detailed documentation is available in the `docs/` folder:
 
 TraceNest follows semantic versioning.
 
-### Current Version: `0.1.8`
+### Current Version: `0.1.9`
 
 Includes:
 - Core logging API

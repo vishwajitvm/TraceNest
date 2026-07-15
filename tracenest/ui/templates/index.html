@@ -3,13 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <title>TraceNest</title>
-
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -26,44 +24,60 @@
         <a href="/" class="text-muted text-decoration-none small">← Back</a>
       </div>
 
-      <div class="flex-grow-1 overflow-auto px-3" id="file-list"></div>
+      <div class="flex-grow-1 overflow-auto px-3 custom-scroll" id="file-list"></div>
     </aside>
 
     <!-- MAIN -->
-    <main class="flex-grow-1 d-flex flex-column overflow-hidden">
+    <main class="flex-grow-1 d-flex flex-column overflow-hidden position-relative">
 
       <!-- HEADER -->
       <header class="p-3 border-bottom d-flex justify-content-between align-items-center gap-3">
-        <div class="d-flex gap-2 flex-wrap">
-
-          <!-- ✅ NEW: ALL -->
-          <div class="badge-filter bg-info active-all" data-level="all">All</div>
-
-          <div class="badge-filter bg-debug" data-level="debug">Debug</div>
-          <div class="badge-filter bg-info" data-level="info">Info</div>
-          <div class="badge-filter bg-warning" data-level="warning">Warning</div>
-          <div class="badge-filter bg-error" data-level="error">Error</div>
+        <div class="d-flex align-items-center gap-3">
+          <!-- Refresh Controls -->
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-icon btn-subtle" id="manualRefreshBtn" title="Refresh Logs">
+              <i class="bi bi-arrow-clockwise fs-6"></i>
+            </button>
+            <div class="form-check form-switch ms-2 mb-0">
+              <input class="form-check-input" type="checkbox" id="autoRefreshToggle" checked>
+              <label class="form-check-label" for="autoRefreshToggle">
+                <span id="refresh-status" class="status-indicator live small fw-medium">
+                  <span class="dot"></span> Live
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
 
         <div class="d-flex align-items-center gap-2">
-          <input
-            class="form-control form-control-sm search-input"
-            placeholder="Search…"
-            style="width:280px"
-          />
-
-          <div class="dropdown">
-            <button class="btn btn-sm btn-outline-primary fw-bold px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#changelogModal">
-              Versions
+          
+          <!-- Level Dropdown Filter -->
+          <div class="dropdown me-2">
+            <button class="btn btn-sm btn-subtle dropdown-toggle d-flex align-items-center gap-2" type="button" id="levelFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-funnel"></i> Level: <span id="currentLevelLabel">All</span>
             </button>
-            <button
-              class="btn btn-sm btn-outline-secondary dropdown-toggle settings-btn ms-2 shadow-sm"
-              type="button"
-              data-bs-toggle="dropdown">
-              ⚙️
-            </button>
+            <ul class="dropdown-menu shadow-sm" id="levelFilterMenu">
+              <li><button class="dropdown-item active" data-level="all">All</button></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><button class="dropdown-item" data-level="debug">Debug</button></li>
+              <li><button class="dropdown-item" data-level="info">Info</button></li>
+              <li><button class="dropdown-item" data-level="warning">Warning</button></li>
+              <li><button class="dropdown-item" data-level="error">Error</button></li>
+              <li><button class="dropdown-item" data-level="fatal">Fatal</button></li>
+            </ul>
+          </div>
 
-            <ul class="dropdown-menu dropdown-menu-end">
+          <div class="input-group input-group-sm custom-search" style="width: 250px;">
+            <span class="input-group-text bg-transparent"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control search-input" placeholder="Search message, trace_id...">
+          </div>
+
+          <div class="dropdown ms-2">
+            <button class="btn btn-icon btn-subtle" type="button" data-bs-toggle="dropdown" title="Theme Settings">
+              <i class="bi bi-palette"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end theme-menu shadow-sm">
+              <li class="dropdown-header">Theme</li>
               <li><button class="dropdown-item" data-theme="light">Light</button></li>
               <li><button class="dropdown-item" data-theme="dark">Dark</button></li>
               <li><button class="dropdown-item" data-theme="dark-blue">Dark Blue</button></li>
@@ -72,22 +86,49 @@
         </div>
       </header>
 
-      <!-- TABLE -->
-      <div class="flex-grow-1 overflow-auto p-3">
-        <table class="table table-sm custom-table">
-          <thead>
-            <tr>
-              <th>Level</th>
-              <th>Time</th>
-              <th>Env</th>
-              <th>Description</th>
-              <th class="text-end">#</th>
-            </tr>
-          </thead>
-          <tbody id="log-body"></tbody>
-        </table>
+      <!-- CONTENT AREA (Table + Details Panel) -->
+      <div class="d-flex flex-grow-1 overflow-hidden">
+        
+        <!-- TABLE -->
+        <div class="flex-grow-1 d-flex flex-column overflow-hidden">
+          <div class="flex-grow-1 overflow-auto custom-scroll" id="table-scroll-area">
+            <table class="table custom-table mb-0">
+              <thead class="sticky-top">
+                <tr>
+                  <th style="width: 120px;">Time</th>
+                  <th style="width: 100px;">Level</th>
+                  <th style="width: 180px;">Logger</th>
+                  <th>Message</th>
+                </tr>
+              </thead>
+              <tbody id="log-body">
+                <!-- Logs rendered here -->
+              </tbody>
+            </table>
+          </div>
+          <div class="p-2 border-top bg-main d-flex justify-content-center">
+             <div id="pagination" class="d-flex gap-1"></div>
+          </div>
+        </div>
 
-        <div id="pagination" class="mt-2"></div>
+        <!-- DETAILS PANEL -->
+        <aside class="details-panel border-start d-flex flex-column" id="detailsPanel">
+          <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-header">
+            <h6 class="mb-0 fw-bold">Log Details</h6>
+            <div>
+              <button class="btn btn-icon btn-subtle btn-sm me-1" id="copyDetailsBtn" title="Copy Raw JSON">
+                <i class="bi bi-clipboard"></i>
+              </button>
+              <button class="btn btn-icon btn-subtle btn-sm" id="closeDetailsBtn">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+          </div>
+          <div class="flex-grow-1 overflow-auto p-0 custom-scroll" id="detailsContent">
+            <!-- Content injected via JS -->
+          </div>
+        </aside>
+
       </div>
 
       <footer class="p-2 border-top d-flex justify-content-between small text-muted px-3">
@@ -100,27 +141,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="app.js"></script>
-
-<!-- CHANGELOG MODAL -->
-<div class="modal fade" id="changelogModal" tabindex="-1" aria-labelledby="changelogModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
-    <div class="modal-content shadow-lg border-0" style="border-radius: 12px; background: var(--bg-sidebar); color: var(--text-main);">
-      <div class="modal-header border-bottom-0 pb-0">
-        <h5 class="modal-title fw-bold" id="changelogModalLabel">TraceNest Versions</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--btn-close-filter);"></button>
-      </div>
-      <div class="modal-body p-0 d-flex" style="height: 60vh;">
-        <div class="border-end overflow-auto" style="width: 200px; background: rgba(0,0,0,0.02);" id="changelog-sidebar">
-          <div class="text-center text-muted p-3"><small>Loading...</small></div>
-        </div>
-        <div class="flex-grow-1 p-4 overflow-auto markdown-body" id="changelog-content">
-          <div class="text-muted h-100 d-flex align-items-center justify-content-center">Select a version to view release notes.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 </body>
 </html>
