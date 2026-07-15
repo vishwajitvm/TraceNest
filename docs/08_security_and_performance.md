@@ -33,5 +33,32 @@ A separate, hidden worker thread (the mailman) empties that queue and writes the
 
 This means you can log tens of thousands of messages per second, and your web server will never even notice!
 
+## Under the Hood (Technical Context)
+Let's look at the exact mechanisms providing this security and performance.
+
+**Security Regex Logic:**
+The `SecretRedactor` filter executes before string serialization. It uses a compiled regex pattern using re.IGNORECASE to scan the incoming dictionary. 
+The pattern evaluates against common dangerous keys like `(password|secret|token|api_key)`. If it detects a match, it mutates the value in-place to `'***'` before it reaches the JSON formatter.
+
+**Performance Thread Queue Diagram:**
+To visualize the non-blocking architecture, here is the thread-state flowchart:
+
+```mermaid
+sequenceDiagram
+    participant App as Main Thread (FastAPI)
+    participant Queue as Memory (queue.Queue)
+    participant Worker as Daemon Thread (TraceNest)
+    participant Disk as File System
+    
+    App->>Queue: put_nowait(LogRecord)
+    Note over App: App returns instantly (0.1ms)
+    loop Infinite Loop
+        Worker->>Queue: get(block=True)
+        Worker->>Disk: write() & flush()
+        Note over Disk: Disk I/O occurs asynchronously
+    end
+```
+By utilizing an unbound memory queue and a background daemon thread, blocking file I/O operations are entirely decoupled from the main execution thread of your application, ensuring zero latency impact.
+
 ---
 **Next Step:** Ready to start hacking? Learn how to build your own plugins in [09. Advanced Customizations](09_advanced_customizations.md).

@@ -32,5 +32,11 @@ If you want to edit the TraceNest code, you shouldn't install it using `pip inst
 * **Formatters:** Want to support logging to XML or CSV? Create a new formatter!
 * **Bug Fixes:** Check the GitHub Issues page to see if anyone has reported a bug you can fix.
 
+## Under the Hood (Technical Context)
+When contributing, please adhere to these technical standards:
+1. **Python Version:** The codebase uses advanced typing features (`Final`, `@dataclass`) and is strictly compatible with Python 3.8 and higher. Do not use syntax exclusive to Python 3.10+ (like `match` statements) to maintain backward compatibility.
+2. **Formatting:** We strictly use standard PEP8 formatting. 
+3. **No Database Dependencies:** Do not introduce ORMs (SQLAlchemy) or database drivers. The library must remain zero-dependency (other than FastAPI for the UI extension).
+
 ---
 **Next Step:** See how far we've come in [14. Changelog & History](14_changelog_and_history.md).

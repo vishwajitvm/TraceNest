@@ -38,5 +38,11 @@ You can type:
 
 This is *much* better because the `user_id` and `item_id` will be saved as separate variables in the JSON file. When you click on the log in the Web Dashboard, those variables will appear beautifully formatted in the Details Panel!
 
+## Under the Hood (Technical Context)
+Python's standard `logging` library implements an `extra` dictionary. 
+When you call `logger.info("msg", extra={"user_id": 5})`, the Python runtime packages this into a `LogRecord` object where `record.__dict__` contains `user_id=5`.
+
+Our `TraceNestJsonFormatter` intercepts the `LogRecord`. It defines a set of standard reserved keys (e.g. `name`, `msg`, `args`, `levelname`, `levelno`, `pathname`, etc.). Any key present on the `LogRecord` that is *not* in the reserved list is assumed to be an injected `extra` variable. The formatter plucks these out and nests them into an `extras` dictionary within the final JSON payload.
+
 ---
 **Next Step:** Are you ready to put this on the internet? Read [10. Deployment & Production](10_deployment_and_production.md).

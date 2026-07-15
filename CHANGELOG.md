@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.15 - 2026-07-16
+
+### Added
+* Injected **Under the Hood** sections into all 14 documentation chapters. This adds deep technical depth, explaining thread queues, AST logic, regex compilation, and FastAPI dependency injection mechanics to satisfy advanced developers while keeping the primary guide layman-friendly.
+
 ## v0.1.14 - 2026-07-16
 
 ### Fixed

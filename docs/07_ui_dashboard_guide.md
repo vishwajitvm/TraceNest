@@ -35,5 +35,12 @@ We know developers love dark mode. In the top right corner, there is a **Palette
 * **Amethyst** (A rich dark purple)
 * **Midnight** (High contrast OLED black)
 
+## Under the Hood (Technical Context)
+The UI is a Single Page Application (SPA) driven by Vanilla Javascript (`app.js`).
+* **Live Refresh Mechanism:** It uses standard `setInterval(fetchLogs, 5000)` combined with the standard `fetch()` browser API. By default, it requests the `/api/logs` endpoint.
+* **DOM Rendering:** The JSON payload returned from the server is parsed (`await response.json()`) and then iterated over to dynamically reconstruct the `innerHTML` of the HTML table (`<tbody>`).
+* **State Management:** Filters and search terms are maintained as global mutable variables in the JS runtime context, which are evaluated linearly on every render cycle.
+* **Theming Implementation:** The color themes are not hardcoded hex values in the components. Instead, the `<body>` tag receives a class (e.g. `class="theme-ruby"`). In `styles.css`, this class overrides a set of CSS Custom Properties (`--bg-main`, `--text-main`). Because Bootstrap 5 is configured to inherit these variables, the entire DOM tree repaints synchronously without requiring a network request.
+
 ---
 **Next Step:** Let's talk about how TraceNest keeps your data safe in [08. Security & Performance](08_security_and_performance.md).

@@ -18,4 +18,9 @@ A version number looks like this: `MAJOR.MINOR.PATCH` (e.g., `v0.1.13`).
 * **v0.1.11:** We added multiple colorful themes (Emerald, Ruby, Midnight) to the UI.
 * **v0.1.13:** We completely rewrote the documentation to make it easy for beginners to understand. 
 
+## Under the Hood (Technical Context)
+As developers, we know that breaking API contracts is a cardinal sin. We strictly enforce Semantic Versioning rules.
+* **Backward Compatibility:** Any changes to the `get_logger` signature or the `TraceNestConfig` structure will only happen on a MAJOR version bump (e.g. `v1.0.0`). 
+* **Deprecation Warnings:** If we ever intend to remove a feature, we will first emit a standard Python `DeprecationWarning` for at least two MINOR version lifecycles before removal.
+
 **Thank you for using TraceNest!**

@@ -19,5 +19,10 @@ Are you having trouble getting TraceNest to work? Here are the most common probl
 ## Does TraceNest slow down my app?
 **Solution:** No! TraceNest uses an asynchronous background thread to write logs to your hard drive. This means your main app never stops to wait for the hard drive to finish saving.
 
+## Under the Hood (Technical Context)
+If you are debugging a deep issue, here is how you can inspect TraceNest internally:
+1. **Thread Inspection:** If logs are not writing, check if the daemon thread crashed. You can iterate over `threading.enumerate()` in Python. You should see a thread named `TraceNest-AsyncFileWorker`. If it's missing, the worker died.
+2. **OS File Permissions:** The `PermissionError` is thrown directly from the OS kernel via POSIX syscalls (`open()`). You can fix this on Linux by running `chmod -R 755 logs/` and `chown -R $USER logs/`.
+
 ---
 **Next Step:** Want to help make TraceNest better? Read [13. Contributing](13_contributing.md).

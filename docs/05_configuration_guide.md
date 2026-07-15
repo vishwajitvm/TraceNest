@@ -46,5 +46,12 @@ Here is a quick reference of every setting you can change in `TraceNestConfig`:
 | `backup_count` | `int` | `7` | How many old log files to keep before deleting them (Retention). |
 | `mask_secrets` | `bool` | `True` | Whether to scan logs for things like "password=123" and turn it into "password=***" |
 
+## Under the Hood (Technical Context)
+When you pass the `TraceNestConfig` object to `get_logger()`, here is exactly what the initialization sequence does:
+1. Validates the configuration using the `@dataclass` fields.
+2. Resolves `log_dir` into a fully absolute `pathlib.Path` object.
+3. Automatically executes `Path.mkdir(parents=True, exist_ok=True)` to guarantee the logging directory exists before any IO operations attempt to write to it.
+4. If `mask_secrets` is `True`, it injects the `SecretRedactor` filter directly into the `TraceNestJsonFormatter`.
+
 ---
 **Next Step:** Learn how to connect this to a web server in [06. FastAPI Integration](06_fastapi_integration.md).

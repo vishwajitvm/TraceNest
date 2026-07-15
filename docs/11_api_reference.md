@@ -21,5 +21,9 @@ This function attaches the Web Dashboard to your FastAPI application.
 * **`app`**: Your FastAPI application object.
 * **`path`**: The URL path where you want the dashboard to live (Default: `"/tracenest"`).
 
+## Under the Hood (Technical Context)
+All TraceNest API functions heavily utilize Python's `typing` module (`typing.Optional`, `typing.Dict`, `typing.Any`) to ensure compatibility with static analysis tools like `mypy` and IDE type checkers. 
+Because `get_logger` returns an augmented `logging.Logger`, IDEs like PyCharm and VSCode will natively autocomplete standard methods like `logger.error(msg, exc_info=True)`.
+
 ---
 **Next Step:** Is something broken? Let's fix it in [12. Troubleshooting & FAQ](12_troubleshooting_and_faq.md).

@@ -43,5 +43,12 @@ This folder contains everything needed to run the beautiful website you view you
 * **`pyproject.toml`:** This file isn't code. It's a configuration file that tells Python package managers (like `pip`) how to build TraceNest so it can be uploaded to PyPI (the website where you download Python packages).
 * **`docs/`:** The folder you are reading right now!
 
+## Under the Hood (Technical Context)
+From a strictly technical perspective, here is the class hierarchy and standard library usage:
+* **Core:** The `TraceNestConfig` object in `config.py` is implemented using Python's built-in `@dataclass` decorator for strict typing and minimal boilerplate.
+* **Security:** `SecretRedactor` in `security.py` uses `re.compile()` to pre-compile regular expressions for passwords and tokens. Pre-compiling the regex ensures that the redaction check happens in microseconds and doesn't bottleneck the logging queue.
+* **Formatters & Handlers:** `json_formatter.py` inherits directly from `logging.Formatter`. `async_file.py` implements a custom class wrapping `logging.handlers.RotatingFileHandler` inside a `threading.Thread` and a `queue.Queue`.
+* **UI:** The frontend is entirely vanilla. `app.js` has zero dependencies on React, Vue, or Angular. It heavily utilizes the modern Browser `Fetch API`, `Promises`, and DOM manipulation (`document.getElementById`, `innerHTML`). The UI uses Bootstrap 5 CSS variables (`--bs-bg-opacity`, etc.) and heavily overrides them with CSS Custom Properties (`--bg-panel`, `--text-main`) to support dynamic theming (Dark, Emerald, Ruby) without requiring page reloads.
+
 ---
 **Next Step:** Let's learn how to tweak and customize the project in [05. Configuration Guide](05_configuration_guide.md).

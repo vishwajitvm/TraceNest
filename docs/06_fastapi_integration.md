@@ -44,5 +44,12 @@ async def get_user(user_id: int):
 
 You will immediately see the TraceNest Dashboard showing the log you just triggered!
 
+## Under the Hood (Technical Context)
+When you invoke `mount_tracenest_ui(app, path="/tracenest")`, you are executing a dependency injection pattern that mutates the FastAPI application instance:
+1. **API Endpoints:** TraceNest creates a new `fastapi.APIRouter()`. It registers a `GET` endpoint at `/api/logs` returning a `fastapi.responses.JSONResponse`.
+2. **Template Serving:** It registers a `GET` endpoint at the root `/` of the router that returns a `fastapi.templating.Jinja2Templates.TemplateResponse` which renders `index.html`.
+3. **Static Assets:** It mounts a `fastapi.staticfiles.StaticFiles` instance to serve `styles.css` and `app.js`.
+4. **App Mounting:** Finally, it calls `app.mount(path, router)` which safely isolates all TraceNest endpoints within their own ASGI sub-application context, preventing any URL collisions with your main API routes.
+
 ---
 **Next Step:** Let's learn all the cool things the dashboard can do in [07. UI Dashboard Guide](07_ui_dashboard_guide.md).

@@ -43,5 +43,11 @@ graph LR
 3. **TraceNest saves it:** It writes it to a file named `app.log` on your computer.
 4. **The UI reads it:** The Web Dashboard reads `app.log` and displays it beautifully on your screen.
 
+## Under the Hood (Technical Context)
+For developers integrating TraceNest into a production stack, here is the technical summary of what TraceNest is doing:
+* **The Logger:** TraceNest does not reinvent the wheel. It extends the standard Python `logging` library. `get_logger()` returns a native `logging.Logger` instance augmented with our custom formatters and handlers. This means it is 100% compatible with existing Python logging ecosystems.
+* **The Formatter:** The JSON transformation is handled by a custom `logging.Formatter` subclass (`TraceNestJsonFormatter`).
+* **The Backend UI:** The dashboard is not a standalone server; it is a mountable API Router. It uses FastAPI's `APIRouter` to expose a `/api/logs` endpoint, and `Jinja2Templates` combined with `StaticFiles` to serve the HTML/CSS/JS.
+
 ---
 **Next Step:** Head over to [02. Quick Start](02_quick_start.md) to get this running on your computer in just 2 minutes!

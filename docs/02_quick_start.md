@@ -79,5 +79,11 @@ Now, open your browser and go to:
 
 You will see the TraceNest Dashboard displaying your logs in real-time!
 
+## Under the Hood (Technical Context)
+When you call `mount_tracenest_ui(app, path="/logs")`:
+1. **API Router:** TraceNest attaches an `APIRouter` to your FastAPI `app` at the `/logs/api` prefix. This creates endpoints like `/logs/api/logs` which parse the `app.log` file on disk and return it as a JSON payload to the frontend.
+2. **Template Rendering:** It mounts a Jinja2 template at the base `/logs` path. When you visit `/logs`, FastAPI renders `index.html` and serves the static CSS/JS assets.
+3. **No Database:** Notice that there is no database setup (no PostgreSQL, Redis, or SQLite). The "database" is entirely file-system based, relying on standard Python file I/O streams (`open()`, `seek()`, `readlines()`) which makes the setup entirely zero-dependency.
+
 ---
 **Next Step:** Want to know exactly how it does this magic? Read [03. Core Concepts Explained](03_core_concepts_explained.md).

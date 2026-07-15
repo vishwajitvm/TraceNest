@@ -38,5 +38,12 @@ This means your server will *never* run out of disk space because of logs!
 
 We'll look at exactly how to change these settings in [05. Configuration Guide](05_configuration_guide.md).
 
+## Under the Hood (Technical Context)
+If you are wondering how this is implemented in Python:
+* **The Logger:** `get_logger()` calls `logging.getLogger(name)`. TraceNest attaches a custom handler (`AsyncFileHandler`) to this standard logger.
+* **The Formatter:** The `TraceNestJsonFormatter` overrides the `format(self, record: logging.LogRecord) -> str` method. It converts the standard `LogRecord` attributes (like `record.levelname` and `record.msg`) into a Python dictionary, injects any `extra` kwargs provided by the developer, and then runs `json.dumps()` to output a string.
+* **The Handler (Thread Queuing):** The `AsyncFileHandler` creates an infinite-capacity, thread-safe `queue.Queue`. When you call `logger.info()`, the handler executes `self.queue.put_nowait(record)`. A background daemon `threading.Thread` runs an infinite loop (`while True:`) calling `queue.get()`, formatting the record, and writing it to the `logging.handlers.RotatingFileHandler`. 
+* **Rotation:** `RotatingFileHandler` intercepts the file write. Before writing, it checks if the current file size + the new log size exceeds `maxBytes`. If it does, it calls `self.doRollover()`, which closes the file handle, renames the file (e.g., to `app.log.1`), and opens a fresh `app.log`.
+
 ---
 **Next Step:** Let's take a tour of the actual code and see where everything lives in [04. Project Architecture](04_project_architecture.md).
