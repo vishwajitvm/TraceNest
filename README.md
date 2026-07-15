@@ -156,6 +156,16 @@ TraceNest will **never crash your application**.
 
 ## Changelog
 
+### v0.1.8 - 2026-07-15
+* Auto-refresh functionality to stream logs live in the dashboard without manually reloading.
+* Manual refresh button.
+* Slide-out Details Panel providing deep-dive capabilities into structured logs and traceback without losing table context.
+* PyPI version checking directly in the UI versions modal.
+* Completely redesigned UI dashboard inspired by modern observability platforms (e.g., Grafana/Vercel).
+* High contrast, beautiful themes (Dark, Light, Dark Blue) relying on modern `CSS variables`.
+* Achieved O(1) table updates per polling interval by intelligently caching parsed logs and dynamically computing diffs on the frontend.
+* Current log selection bug: Re-rendering the dashboard on polling no longer destroys user selection.
+
 ### v0.1.7 - 2026-07-03
 * Markdown-based changelog system directly integrated into the UI.
 * Dynamic Versions modal featuring a beautiful two-pane layout, fetching and rendering markdown using `marked.js`.
@@ -207,7 +217,7 @@ Detailed documentation is available in the `docs/` folder:
 
 TraceNest follows semantic versioning.
 
-### Current Version: `0.1.7`
+### Current Version: `0.1.8`
 
 Includes:
 - Core logging API
