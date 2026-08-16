@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.18 - 2026-08-16
+
+### Added
+* Refined UI theme colors: Mapped `DEBUG` to yellow, `INFO` to blue, and `WARNING` to orange to strictly follow standard logging color conventions.
+* Updated `README.md` to display dynamically rendered Mermaid SVG images (via mermaid.ink) for both the Architecture and Lifecycle diagrams, achieving perfect rendering on both GitHub and PyPI.
+* Updated `README.md` log descriptions to explicitly specify the assigned badge color for each log level.
+
 ## v0.1.17 - 2026-08-16
 
 ### Fixed

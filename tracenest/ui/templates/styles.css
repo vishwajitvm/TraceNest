@@ -4,13 +4,13 @@
 
    :root {
     /* Base Status Colors - Adjusted for better contrast in dark/light */
-    --trace: #8b5cf6;
-    --debug: #3b82f6;
-    --info: #0ea5e9;
+    --trace: #8b5cf6; /* Purple */
+    --debug: #eab308; /* Yellow */
+    --info: #3b82f6; /* Blue */
     --success: #10b981;
-    --warning: #f59e0b;
-    --error: #ef4444;
-    --fatal: #b91c1c;
+    --warning: #f97316; /* Orange */
+    --error: #ef4444; /* Red */
+    --fatal: #b91c1c; /* Dark Red */
   }
   
   /* THEME: LIGHT */
@@ -237,19 +237,19 @@
     font-family: 'JetBrains Mono', monospace;
   }
   .badge-trace { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
-  .badge-debug { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
-  .badge-info { background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.3); }
+  .badge-debug { background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
+  .badge-info { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
   .badge-success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-  .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+  .badge-warning { background: rgba(249, 115, 22, 0.15); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.3); }
   .badge-error { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
   .badge-fatal { background: rgba(185, 28, 28, 0.2); color: #fca5a5; border: 1px solid rgba(185, 28, 28, 0.5); }
   
   /* Light theme badge adjustments */
   .theme-light .badge-trace { color: #6d28d9; background: #ede9fe; }
-  .theme-light .badge-debug { color: #1d4ed8; background: #dbeafe; }
-  .theme-light .badge-info { color: #0369a1; background: #e0f2fe; }
+  .theme-light .badge-debug { color: #a16207; background: #fef08a; }
+  .theme-light .badge-info { color: #1d4ed8; background: #dbeafe; }
   .theme-light .badge-success { color: #047857; background: #d1fae5; }
-  .theme-light .badge-warning { color: #b45309; background: #fef3c7; }
+  .theme-light .badge-warning { color: #c2410c; background: #ffedd5; }
   .theme-light .badge-error { color: #b91c1c; background: #fee2e2; }
   .theme-light .badge-fatal { color: #7f1d1d; background: #fecaca; }
   

@@ -28,12 +28,12 @@ TraceNest is not just a logger. It is a **logging infrastructure layer** embedde
 TraceNest handles several types of logs out of the box. We provide comprehensive application log levels for every scenario:
 
 1. **Application Logs:** Custom log methods you can call directly from your code:
-   - `logger.trace("Deep execution flow")` - For highly detailed, granular execution tracking.
-   - `logger.debug("Variable state check")` - For diagnostic information useful during development.
-   - `logger.info("User logged in")` - For general application events and standard milestones.
-   - `logger.warning("Disk space low")` - For unexpected situations that aren't yet fatal errors.
-   - `logger.error("Payment failed")` - For explicit failures that affect a specific operation.
-   - `logger.critical("System crash")` - For catastrophic failures requiring immediate attention.
+   - `logger.trace("Deep execution flow")` - [**Purple**] For highly detailed, granular execution tracking.
+   - `logger.debug("Variable state check")` - [**Yellow**] For diagnostic information useful during development.
+   - `logger.info("User logged in")` - [**Blue**] For general application events and standard milestones.
+   - `logger.warning("Disk space low")` - [**Orange**] For unexpected situations that aren't yet fatal errors.
+   - `logger.error("Payment failed")` - [**Red**] For explicit failures that affect a specific operation.
+   - `logger.critical("System crash")` - [**Dark Red**] For catastrophic failures requiring immediate attention.
 2. **HTTP Request Logs:** (When using FastAPI) Automatically logs all incoming requests, response HTTP status codes, request URLs, client IP addresses, and exact request durations.
 3. **Exception Logs:** Automatically captures all unhandled exceptions, including full stack tracebacks, so you never lose debugging context when things break.
 4. **Security Logs:** Silently handles sensitive data by recursively searching and masking secrets like `Authorization` headers, JWT tokens, user passwords, and database connection URIs before they are ever stored.
@@ -105,14 +105,7 @@ When you install and import TraceNest into your project, it seamlessly injects i
 
 ### Architecture Diagram
 
-```text
-[Your Application code] --(logger.info)--> [TraceNest In-Memory Queue]
-[Incoming HTTP Request] --(Intercepted)--> [TraceNest Middleware] --> [TraceNest In-Memory Queue]
-
-[TraceNest In-Memory Queue] --(Background Thread Flushes)--> [TraceNestLogs / YYYY-MM-DD.log]
-
-[Developer Browser] --(http://localhost:8000/tracenest)--> [TraceNest UI Router] --(Reads)--> [TraceNestLogs]
-```
+![TraceNest Architecture Diagram](https://mermaid.ink/svg/eyJjb2RlIjogImdyYXBoIFREXG4gICAgQVtZb3VyIEFwcGxpY2F0aW9uIGNvZGVdIC0tPnxsb2dnZXIuaW5mb3wgQihUcmFjZU5lc3QgSW4tTWVtb3J5IFF1ZXVlKVxuICAgIENbSW5jb21pbmcgSFRUUCBSZXF1ZXN0XSAtLT58SW50ZXJjZXB0ZWQgYnl8IEQoVHJhY2VOZXN0IE1pZGRsZXdhcmUpXG4gICAgRCAtLT4gQlxuICAgIEIgLS0-fEJhY2tncm91bmQgVGhyZWFkIEZsdXNoZXN8IEVbVHJhY2VOZXN0TG9ncyAvIDIwMjYtMDgtMTYubG9nXVxuICAgIFxuICAgIEZbRGV2ZWxvcGVyIEJyb3dzZXJdIC0tPnxodHRwOi8vbG9jYWxob3N0OjgwMDAvdHJhY2VuZXN0fCBHKFRyYWNlTmVzdCBVSSBSb3V0ZXIpXG4gICAgRyAtLT58UmVhZHN8IEUiLCAibWVybWFpZCI6IHsidGhlbWUiOiAiZGVmYXVsdCJ9fQ==)
 
 ---
 
@@ -130,23 +123,7 @@ Understanding the lifecycle of a single log message helps illustrate why TraceNe
 
 ### Lifecycle Diagram
 
-```text
-Application -> TraceNest Core: logger.error("DB Timeout", password="secret123")
-TraceNest Core -> Redaction Engine: Scan and Mask
-Redaction Engine -> TraceNest Core: {"msg": "DB Timeout", "password": "***"}
-TraceNest Core -> Memory Queue: Push to Buffer (Non-blocking)
-Application -> Application: Continues Execution...
-
-(Background Thread)
-Memory Queue -> File System: Flush Buffer to File
-File System -> File System: Check File Size / Rotate if needed
-
-(Developer UI)
-Developer UI -> TraceNest Core: GET /tracenest/api/logs
-TraceNest Core -> File System: Read latest entries
-File System -> Developer UI: Return JSON payload
-Developer UI -> Developer UI: Render in Dashboard
-```
+![TraceNest Lifecycle Diagram](https://mermaid.ink/svg/eyJjb2RlIjogInNlcXVlbmNlRGlhZ3JhbVxuICAgIHBhcnRpY2lwYW50IEFwcCBhcyBBcHBsaWNhdGlvblxuICAgIHBhcnRpY2lwYW50IENvcmUgYXMgVHJhY2VOZXN0IENvcmVcbiAgICBwYXJ0aWNpcGFudCBSZWRhY3QgYXMgUmVkYWN0aW9uIEVuZ2luZVxuICAgIHBhcnRpY2lwYW50IFF1ZXVlIGFzIE1lbW9yeSBRdWV1ZVxuICAgIHBhcnRpY2lwYW50IERpc2sgYXMgRmlsZSBTeXN0ZW0gKFRyYWNlTmVzdExvZ3MpXG4gICAgcGFydGljaXBhbnQgVUkgYXMgRGV2ZWxvcGVyIFVJXG5cbiAgICBBcHAtPj5Db3JlOiBsb2dnZXIuZXJyb3IoXCJEQiBUaW1lb3V0XCIsIHBhc3N3b3JkPVwic2VjcmV0MTIzXCIpXG4gICAgQ29yZS0-PlJlZGFjdDogU2NhbiBhbmQgTWFza1xuICAgIFJlZGFjdC0tPj5Db3JlOiB7XCJtc2dcIjogXCJEQiBUaW1lb3V0XCIsIFwicGFzc3dvcmRcIjogXCIqKipcIn1cbiAgICBDb3JlLT4-UXVldWU6IFB1c2ggdG8gQnVmZmVyIChOb24tYmxvY2tpbmcpXG4gICAgQXBwLT4-QXBwOiBDb250aW51ZXMgRXhlY3V0aW9uLi4uXG4gICAgXG4gICAgbG9vcCBCYWNrZ3JvdW5kIFRocmVhZFxuICAgICAgICBRdWV1ZS0-PkRpc2s6IEZsdXNoIEJ1ZmZlciB0byBGaWxlXG4gICAgICAgIERpc2stPj5EaXNrOiBDaGVjayBGaWxlIFNpemUgLyBSb3RhdGUgaWYgbmVlZGVkXG4gICAgZW5kXG5cbiAgICBVSS0-PkNvcmU6IEdFVCAvdHJhY2VuZXN0L2FwaS9sb2dzXG4gICAgQ29yZS0-PkRpc2s6IFJlYWQgbGF0ZXN0IGVudHJpZXNcbiAgICBEaXNrLS0-PlVJOiBSZXR1cm4gSlNPTiBwYXlsb2FkXG4gICAgVUktPj5VSTogUmVuZGVyIGluIERhc2hib2FyZCIsICJtZXJtYWlkIjogeyJ0aGVtZSI6ICJkZWZhdWx0In19)
 
 ---
 
