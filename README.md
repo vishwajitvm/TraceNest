@@ -105,15 +105,13 @@ When you install and import TraceNest into your project, it seamlessly injects i
 
 ### Architecture Diagram
 
-```mermaid
-graph TD
-    A[Your Application code] -->|logger.info| B(TraceNest In-Memory Queue)
-    C[Incoming HTTP Request] -->|Intercepted by| D(TraceNest Middleware)
-    D --> B
-    B -->|Background Thread Flushes| E[TraceNestLogs / 2026-08-16.log]
-    
-    F[Developer Browser] -->|http://localhost:8000/tracenest| G(TraceNest UI Router)
-    G -->|Reads| E
+```text
+[Your Application code] --(logger.info)--> [TraceNest In-Memory Queue]
+[Incoming HTTP Request] --(Intercepted)--> [TraceNest Middleware] --> [TraceNest In-Memory Queue]
+
+[TraceNest In-Memory Queue] --(Background Thread Flushes)--> [TraceNestLogs / YYYY-MM-DD.log]
+
+[Developer Browser] --(http://localhost:8000/tracenest)--> [TraceNest UI Router] --(Reads)--> [TraceNestLogs]
 ```
 
 ---
@@ -132,30 +130,22 @@ Understanding the lifecycle of a single log message helps illustrate why TraceNe
 
 ### Lifecycle Diagram
 
-```mermaid
-sequenceDiagram
-    participant App as Application
-    participant Core as TraceNest Core
-    participant Redact as Redaction Engine
-    participant Queue as Memory Queue
-    participant Disk as File System (TraceNestLogs)
-    participant UI as Developer UI
+```text
+Application -> TraceNest Core: logger.error("DB Timeout", password="secret123")
+TraceNest Core -> Redaction Engine: Scan and Mask
+Redaction Engine -> TraceNest Core: {"msg": "DB Timeout", "password": "***"}
+TraceNest Core -> Memory Queue: Push to Buffer (Non-blocking)
+Application -> Application: Continues Execution...
 
-    App->>Core: logger.error("DB Timeout", password="secret123")
-    Core->>Redact: Scan and Mask
-    Redact-->>Core: {"msg": "DB Timeout", "password": "***"}
-    Core->>Queue: Push to Buffer (Non-blocking)
-    App->>App: Continues Execution...
-    
-    loop Background Thread
-        Queue->>Disk: Flush Buffer to File
-        Disk->>Disk: Check File Size / Rotate if needed
-    end
+(Background Thread)
+Memory Queue -> File System: Flush Buffer to File
+File System -> File System: Check File Size / Rotate if needed
 
-    UI->>Core: GET /tracenest/api/logs
-    Core->>Disk: Read latest entries
-    Disk-->>UI: Return JSON payload
-    UI->>UI: Render in Dashboard
+(Developer UI)
+Developer UI -> TraceNest Core: GET /tracenest/api/logs
+TraceNest Core -> File System: Read latest entries
+File System -> Developer UI: Return JSON payload
+Developer UI -> Developer UI: Render in Dashboard
 ```
 
 ---

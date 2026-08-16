@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.17 - 2026-08-16
+
+### Fixed
+* PyPI Compatibility: Replaced Mermaid diagrams with text-based flowcharts because PyPI's markdown renderer does not support Mermaid code blocks.
+
 ## v0.1.16 - 2026-08-16
 
 ### Added
