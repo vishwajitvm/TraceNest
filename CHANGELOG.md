@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.16 - 2026-08-16
+
+### Added
+* Massive documentation overhaul: Completely rewrote the `README.md` to include detailed explanations of TraceNest's architecture, types of logs managed, and implementation guides for both standalone Python and FastAPI projects.
+* Included detailed Mermaid diagrams illustrating the Developer Workflow and the TraceNest Event Lifecycle.
+* Comprehensive feature summary highlighting security (redaction), UI themes, and performance guarantees.
+
+### Fixed
+* TraceNest UI crashing backend issue: Fixed the import path for `setup_tracenest` to properly mount the TraceNest UI and API router.
+* MongoDB connection failure: Commented out the `MONGODB_ATLAS_URI` in `.env` to fallback seamlessly to the local Docker MongoDB instance.
+* Validated frontend health checks and TraceNest log generation in the `TraceNestLogs` directory.
+
 ## v0.1.15 - 2026-07-16
 
 ### Added
